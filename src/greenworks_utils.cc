@@ -23,12 +23,12 @@ void sleep(int milliseconds) {
 #if defined(_WIN32)
   Sleep(milliseconds);
 #else
-  usleep(milliseconds*1000);
+  usleep(milliseconds * 1000);
 #endif
 }
 
-bool ReadFile(const char* path, char** content, int* length) {
-  std::ifstream fin(path, std::ios::in|std::ios::binary|std::ios::ate);
+bool ReadFile(const char *path, char **content, int *length) {
+  std::ifstream fin(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!fin.is_open()) {
     return false;
   }
@@ -39,27 +39,27 @@ bool ReadFile(const char* path, char** content, int* length) {
   return true;
 }
 
-bool WriteFile(const std::string& target_path, char* content, int length) {
-  std::ofstream fout(target_path.c_str(), std::ios::out|std::ios::binary);
+bool WriteFile(const std::string &target_path, char *content, int length) {
+  std::ofstream fout(target_path.c_str(), std::ios::out | std::ios::binary);
   fout.write(content, length);
   return fout.good();
 }
 
-std::string GetFileNameFromPath(const std::string& file_path) {
+std::string GetFileNameFromPath(const std::string &file_path) {
   size_t pos = file_path.find_last_of("/\\");
   if (pos == std::string::npos)
     return file_path;
   return file_path.substr(pos + 1);
 }
 
-bool UpdateFileLastUpdatedTime(const char* file_path, time_t time) {
+bool UpdateFileLastUpdatedTime(const char *file_path, time_t time) {
   utimbuf utime_buf;
   utime_buf.actime = time;
   utime_buf.modtime = time;
   return utime(file_path, &utime_buf) == 0;
 }
 
-int64 GetFileLastUpdatedTime(const char* file_path) {
+int64 GetFileLastUpdatedTime(const char *file_path) {
   struct stat st;
   if (stat(file_path, &st))
     return -1;
@@ -79,4 +79,4 @@ uint64 strToUint64(std::string str) {
   return result;
 }
 
-}  // namespace utils
+} // namespace utils

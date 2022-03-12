@@ -21,12 +21,10 @@ namespace greenworks {
 namespace api {
 namespace {
 
-#define MAKE_ENUM_PAIR(name) \
-    { name, #name }
+#define MAKE_ENUM_PAIR(name)                                                                                                                                   \
+  { name, #name }
 
-void FreeCallback(char* data, void* hint) {
-  delete data;
-}
+void FreeCallback(char *data, void *hint) { delete data; }
 
 v8::Local<v8::Object> GetSteamUserCountType(int type_id) {
   if (type_id > k_EAccountTypeMax) {
@@ -35,23 +33,13 @@ v8::Local<v8::Object> GetSteamUserCountType(int type_id) {
   }
   auto type = static_cast<EAccountType>(type_id);
   std::map<EAccountType, std::string> account_types = {
-    MAKE_ENUM_PAIR(k_EAccountTypeInvalid),
-    MAKE_ENUM_PAIR(k_EAccountTypeIndividual),
-    MAKE_ENUM_PAIR(k_EAccountTypeMultiseat),
-    MAKE_ENUM_PAIR(k_EAccountTypeGameServer),
-    MAKE_ENUM_PAIR(k_EAccountTypeAnonGameServer),
-    MAKE_ENUM_PAIR(k_EAccountTypePending),
-    MAKE_ENUM_PAIR(k_EAccountTypeContentServer),
-    MAKE_ENUM_PAIR(k_EAccountTypeClan),
-    MAKE_ENUM_PAIR(k_EAccountTypeChat),
-    MAKE_ENUM_PAIR(k_EAccountTypeConsoleUser),
-    MAKE_ENUM_PAIR(k_EAccountTypeAnonUser),
-    MAKE_ENUM_PAIR(k_EAccountTypeMax)
-  };
+      MAKE_ENUM_PAIR(k_EAccountTypeInvalid),       MAKE_ENUM_PAIR(k_EAccountTypeIndividual),     MAKE_ENUM_PAIR(k_EAccountTypeMultiseat),
+      MAKE_ENUM_PAIR(k_EAccountTypeGameServer),    MAKE_ENUM_PAIR(k_EAccountTypeAnonGameServer), MAKE_ENUM_PAIR(k_EAccountTypePending),
+      MAKE_ENUM_PAIR(k_EAccountTypeContentServer), MAKE_ENUM_PAIR(k_EAccountTypeClan),           MAKE_ENUM_PAIR(k_EAccountTypeChat),
+      MAKE_ENUM_PAIR(k_EAccountTypeConsoleUser),   MAKE_ENUM_PAIR(k_EAccountTypeAnonUser),       MAKE_ENUM_PAIR(k_EAccountTypeMax)};
   std::string name = account_types[type];
   v8::Local<v8::Object> account_type = Nan::New<v8::Object>();
-  Nan::Set(account_type, Nan::New("name").ToLocalChecked(),
-           Nan::New(name).ToLocalChecked());
+  Nan::Set(account_type, Nan::New("name").ToLocalChecked(), Nan::New(name).ToLocalChecked());
   Nan::Set(account_type, Nan::New("value").ToLocalChecked(), Nan::New(type_id));
   return account_type;
 }
@@ -86,84 +74,57 @@ NAN_METHOD(GetSteamId) {
   Nan::HandleScope scope;
   CSteamID user_id = SteamUser()->GetSteamID();
   v8::Local<v8::Object> flags = Nan::New<v8::Object>();
-  Nan::Set(flags, Nan::New("anonymous").ToLocalChecked(),
-           Nan::New(user_id.BAnonAccount()));
-  Nan::Set(flags, Nan::New("anonymousGameServer").ToLocalChecked(),
-           Nan::New(user_id.BAnonGameServerAccount()));
-  Nan::Set(flags, Nan::New("anonymousGameServerLogin").ToLocalChecked(),
-           Nan::New(user_id.BBlankAnonAccount()));
-  Nan::Set(flags, Nan::New("anonymousUser").ToLocalChecked(),
-           Nan::New(user_id.BAnonUserAccount()));
-  Nan::Set(flags, Nan::New("chat").ToLocalChecked(),
-           Nan::New(user_id.BChatAccount()));
-  Nan::Set(flags, Nan::New("clan").ToLocalChecked(),
-           Nan::New(user_id.BClanAccount()));
-  Nan::Set(flags, Nan::New("consoleUser").ToLocalChecked(),
-           Nan::New(user_id.BConsoleUserAccount()));
-  Nan::Set(flags, Nan::New("contentServer").ToLocalChecked(),
-           Nan::New(user_id.BContentServerAccount()));
-  Nan::Set(flags, Nan::New("gameServer").ToLocalChecked(),
-           Nan::New(user_id.BGameServerAccount()));
-  Nan::Set(flags, Nan::New("individual").ToLocalChecked(),
-           Nan::New(user_id.BIndividualAccount()));
-  Nan::Set(flags, Nan::New("gameServerPersistent").ToLocalChecked(),
-           Nan::New(user_id.BPersistentGameServerAccount()));
-  Nan::Set(flags, Nan::New("lobby").ToLocalChecked(),
-           Nan::New(user_id.IsLobby()));
+  Nan::Set(flags, Nan::New("anonymous").ToLocalChecked(), Nan::New(user_id.BAnonAccount()));
+  Nan::Set(flags, Nan::New("anonymousGameServer").ToLocalChecked(), Nan::New(user_id.BAnonGameServerAccount()));
+  Nan::Set(flags, Nan::New("anonymousGameServerLogin").ToLocalChecked(), Nan::New(user_id.BBlankAnonAccount()));
+  Nan::Set(flags, Nan::New("anonymousUser").ToLocalChecked(), Nan::New(user_id.BAnonUserAccount()));
+  Nan::Set(flags, Nan::New("chat").ToLocalChecked(), Nan::New(user_id.BChatAccount()));
+  Nan::Set(flags, Nan::New("clan").ToLocalChecked(), Nan::New(user_id.BClanAccount()));
+  Nan::Set(flags, Nan::New("consoleUser").ToLocalChecked(), Nan::New(user_id.BConsoleUserAccount()));
+  Nan::Set(flags, Nan::New("contentServer").ToLocalChecked(), Nan::New(user_id.BContentServerAccount()));
+  Nan::Set(flags, Nan::New("gameServer").ToLocalChecked(), Nan::New(user_id.BGameServerAccount()));
+  Nan::Set(flags, Nan::New("individual").ToLocalChecked(), Nan::New(user_id.BIndividualAccount()));
+  Nan::Set(flags, Nan::New("gameServerPersistent").ToLocalChecked(), Nan::New(user_id.BPersistentGameServerAccount()));
+  Nan::Set(flags, Nan::New("lobby").ToLocalChecked(), Nan::New(user_id.IsLobby()));
 
   v8::Local<v8::Object> result = greenworks::SteamID::Create(user_id);
   // For backwards compatiblilty.
   Nan::Set(result, Nan::New("flags").ToLocalChecked(), flags);
-  Nan::Set(result, Nan::New("type").ToLocalChecked(),
-           GetSteamUserCountType(user_id.GetEAccountType()));
-  Nan::Set(result, Nan::New("accountId").ToLocalChecked(),
-           Nan::New<v8::Integer>(user_id.GetAccountID()));
-  Nan::Set(result, Nan::New("steamId").ToLocalChecked(),
-           Nan::New(utils::uint64ToString(user_id.ConvertToUint64()))
-               .ToLocalChecked());
-  Nan::Set(result, Nan::New("staticAccountId").ToLocalChecked(),
-           Nan::New(utils::uint64ToString(user_id.GetStaticAccountKey()))
-               .ToLocalChecked());
-  Nan::Set(result, Nan::New("isValid").ToLocalChecked(),
-           Nan::New<v8::Integer>(user_id.IsValid()));
-  Nan::Set(result, Nan::New("level").ToLocalChecked(),
-           Nan::New<v8::Integer>(SteamUser()->GetPlayerSteamLevel()));
+  Nan::Set(result, Nan::New("type").ToLocalChecked(), GetSteamUserCountType(user_id.GetEAccountType()));
+  Nan::Set(result, Nan::New("accountId").ToLocalChecked(), Nan::New<v8::Integer>(user_id.GetAccountID()));
+  Nan::Set(result, Nan::New("steamId").ToLocalChecked(), Nan::New(utils::uint64ToString(user_id.ConvertToUint64())).ToLocalChecked());
+  Nan::Set(result, Nan::New("staticAccountId").ToLocalChecked(), Nan::New(utils::uint64ToString(user_id.GetStaticAccountKey())).ToLocalChecked());
+  Nan::Set(result, Nan::New("isValid").ToLocalChecked(), Nan::New<v8::Integer>(user_id.IsValid()));
+  Nan::Set(result, Nan::New("level").ToLocalChecked(), Nan::New<v8::Integer>(SteamUser()->GetPlayerSteamLevel()));
 
   if (!SteamFriends()->RequestUserInformation(user_id, true)) {
-    Nan::Set(result, Nan::New("screenName").ToLocalChecked(),
-             Nan::New(SteamFriends()->GetFriendPersonaName(user_id))
-                 .ToLocalChecked());
+    Nan::Set(result, Nan::New("screenName").ToLocalChecked(), Nan::New(SteamFriends()->GetFriendPersonaName(user_id)).ToLocalChecked());
   } else {
     std::ostringstream sout;
     sout << user_id.GetAccountID();
-    Nan::Set(result, Nan::New("screenName").ToLocalChecked(),
-             Nan::New(sout.str()).ToLocalChecked());
+    Nan::Set(result, Nan::New("screenName").ToLocalChecked(), Nan::New(sout.str()).ToLocalChecked());
   }
   info.GetReturnValue().Set(result);
 }
 
 NAN_METHOD(GetAppId) {
   Nan::HandleScope scope;
-  info.GetReturnValue().Set(
-      Nan::New(SteamUtils()->GetAppID()));
+  info.GetReturnValue().Set(Nan::New(SteamUtils()->GetAppID()));
 }
 
 NAN_METHOD(GetAppBuildId) {
   Nan::HandleScope scope;
-  info.GetReturnValue().Set(
-      Nan::New(SteamApps()->GetAppBuildId()));
+  info.GetReturnValue().Set(Nan::New(SteamApps()->GetAppBuildId()));
 }
 
 NAN_METHOD(GetCurrentGameLanguage) {
   Nan::HandleScope scope;
-  info.GetReturnValue().Set(
-      Nan::New(SteamApps()->GetCurrentGameLanguage()).ToLocalChecked());
+  info.GetReturnValue().Set(Nan::New(SteamApps()->GetCurrentGameLanguage()).ToLocalChecked());
 }
 
 NAN_METHOD(GetCurrentUILanguage) {
   Nan::HandleScope scope;
-  info.GetReturnValue().Set(
-      Nan::New(SteamUtils()->GetSteamUILanguage()).ToLocalChecked());
+  info.GetReturnValue().Set(Nan::New(SteamUtils()->GetSteamUILanguage()).ToLocalChecked());
 }
 
 // TODO(hokein): Implement get game install directory.
@@ -180,8 +141,7 @@ NAN_METHOD(GetAppInstallDir) {
   }
 
   AppId_t app_id = static_cast<AppId_t>(Nan::To<int32>(info[0]).FromJust());
-  const int buffer_size =
-      260;  // MAX_PATH on 32bit Windows according to MSDN documentation
+  const int buffer_size = 260; // MAX_PATH on 32bit Windows according to MSDN documentation
   char buffer[buffer_size];
   uint32 length = SteamApps()->GetAppInstallDir(app_id, buffer, buffer_size);
 
@@ -194,15 +154,13 @@ NAN_METHOD(GetNumberOfPlayers) {
   if (info.Length() < 1 || !info[0]->IsFunction()) {
     THROW_BAD_ARGS("Bad arguments");
   }
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[0].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[0].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 1 && info[1]->IsFunction())
     error_callback = new Nan::Callback(info[1].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::GetNumberOfPlayersWorker(
-      success_callback, error_callback));
+  Nan::AsyncQueueWorker(new greenworks::GetNumberOfPlayersWorker(success_callback, error_callback));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -293,20 +251,16 @@ NAN_METHOD(GetImageRGBA) {
     THROW_BAD_ARGS("Fail to get image size");
   }
   int buffer_size = 4 * width * height;
-  auto* image_buffer = new char[buffer_size];
-  if (!SteamUtils()->GetImageRGBA(image_handle,
-                                  reinterpret_cast<uint8*>(image_buffer),
-                                  buffer_size)) {
+  auto *image_buffer = new char[buffer_size];
+  if (!SteamUtils()->GetImageRGBA(image_handle, reinterpret_cast<uint8 *>(image_buffer), buffer_size)) {
     THROW_BAD_ARGS("Fail to get image");
   }
-  info.GetReturnValue().Set(
-      Nan::NewBuffer(image_buffer, buffer_size, FreeCallback, nullptr)
-          .ToLocalChecked());
+  info.GetReturnValue().Set(Nan::NewBuffer(image_buffer, buffer_size, FreeCallback, nullptr).ToLocalChecked());
 }
 
 NAN_METHOD(GetIPCountry) {
   Nan::HandleScope scope;
-  const char* countryCode = SteamUtils()->GetIPCountry();
+  const char *countryCode = SteamUtils()->GetIPCountry();
   info.GetReturnValue().Set(Nan::New(countryCode, 2).ToLocalChecked());
 }
 
@@ -326,9 +280,7 @@ NAN_METHOD(RunCallbacks) {
 }
 
 void RegisterAPIs(v8::Local<v8::Object> target) {
-  Nan::Set(target,
-           Nan::New("_version").ToLocalChecked(),
-           Nan::New(GREENWORKS_VERSION).ToLocalChecked());
+  Nan::Set(target, Nan::New("_version").ToLocalChecked(), Nan::New(GREENWORKS_VERSION).ToLocalChecked());
 
   SET_FUNCTION("restartAppIfNecessary", RestartAppIfNecessary);
   SET_FUNCTION("isSteamRunning", IsSteamRunning);
@@ -354,6 +306,6 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
 
 SteamAPIRegistry::Add X(RegisterAPIs);
 
-}  // namespace
-}  // namespace api
-}  // namespace greenworks
+} // namespace
+} // namespace api
+} // namespace greenworks

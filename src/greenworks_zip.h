@@ -21,8 +21,8 @@
 
 namespace greenworks {
 
-int zip(const char* targetFile, const char* sourceDir, int compressionLevel, const char* password);
+int zip(const char *targetFile, const char *sourceDir, int compressionLevel, const char *password);
 
 }
 
-#endif  // GREENWORKS_ZIP_H_
+#endif // GREENWORKS_ZIP_H_

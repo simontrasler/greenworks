@@ -18,24 +18,19 @@ namespace {
 NAN_METHOD(SaveTextToFile) {
   Nan::HandleScope scope;
 
-  if (info.Length() < 3 || !info[0]->IsString() || !info[1]->IsString() ||
-      !info[2]->IsFunction()) {
+  if (info.Length() < 3 || !info[0]->IsString() || !info[1]->IsString() || !info[2]->IsFunction()) {
     THROW_BAD_ARGS("Bad arguments");
   }
 
   std::string file_name(*(Nan::Utf8String(info[0])));
   std::string content(*(Nan::Utf8String(info[1])));
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[2].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[2].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 3 && info[3]->IsFunction())
     error_callback = new Nan::Callback(info[3].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::FileContentSaveWorker(success_callback,
-                                                              error_callback,
-                                                              file_name,
-                                                              content));
+  Nan::AsyncQueueWorker(new greenworks::FileContentSaveWorker(success_callback, error_callback, file_name, content));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -47,16 +42,13 @@ NAN_METHOD(DeleteFile) {
   }
 
   std::string file_name(*(Nan::Utf8String(info[0])));
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[1].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[2]->IsFunction())
     error_callback = new Nan::Callback(info[2].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::FileDeleteWorker(success_callback,
-                                                         error_callback,
-                                                         file_name));
+  Nan::AsyncQueueWorker(new greenworks::FileDeleteWorker(success_callback, error_callback, file_name));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -76,15 +68,12 @@ NAN_METHOD(SaveFilesToCloud) {
       files_path.push_back(*string_array);
   }
 
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[1].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[2]->IsFunction())
     error_callback = new Nan::Callback(info[2].As<v8::Function>());
-  Nan::AsyncQueueWorker(new greenworks::FilesSaveWorker(success_callback,
-                                                        error_callback,
-                                                        files_path));
+  Nan::AsyncQueueWorker(new greenworks::FilesSaveWorker(success_callback, error_callback, files_path));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -96,31 +85,26 @@ NAN_METHOD(ReadTextFromFile) {
   }
 
   std::string file_name(*(Nan::Utf8String(info[0])));
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[1].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[2]->IsFunction())
     error_callback = new Nan::Callback(info[2].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::FileReadWorker(success_callback,
-                                                       error_callback,
-                                                       file_name));
+  Nan::AsyncQueueWorker(new greenworks::FileReadWorker(success_callback, error_callback, file_name));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
 NAN_METHOD(IsCloudEnabled) {
   Nan::HandleScope scope;
-  ISteamRemoteStorage* steam_remote_storage = SteamRemoteStorage();
-  info.GetReturnValue().Set(Nan::New<v8::Boolean>(
-      steam_remote_storage->IsCloudEnabledForApp()));
+  ISteamRemoteStorage *steam_remote_storage = SteamRemoteStorage();
+  info.GetReturnValue().Set(Nan::New<v8::Boolean>(steam_remote_storage->IsCloudEnabledForApp()));
 }
 
 NAN_METHOD(IsCloudEnabledForUser) {
   Nan::HandleScope scope;
-  ISteamRemoteStorage* steam_remote_storage = SteamRemoteStorage();
-  info.GetReturnValue().Set(Nan::New<v8::Boolean>(
-      steam_remote_storage->IsCloudEnabledForAccount()));
+  ISteamRemoteStorage *steam_remote_storage = SteamRemoteStorage();
+  info.GetReturnValue().Set(Nan::New<v8::Boolean>(steam_remote_storage->IsCloudEnabledForAccount()));
 }
 
 NAN_METHOD(EnableCloud) {
@@ -140,15 +124,13 @@ NAN_METHOD(GetCloudQuota) {
   if (info.Length() < 1 || !info[0]->IsFunction()) {
     THROW_BAD_ARGS("Bad arguments");
   }
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[0].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[0].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[1]->IsFunction())
     error_callback = new Nan::Callback(info[1].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::CloudQuotaGetWorker(success_callback,
-                                                            error_callback));
+  Nan::AsyncQueueWorker(new greenworks::CloudQuotaGetWorker(success_callback, error_callback));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -165,10 +147,8 @@ NAN_METHOD(GetFileNameAndSize) {
   }
   int32 index = Nan::To<int32>(info[0].As<v8::Number>()).FromJust();
   int32 file_size = 0;
-  const char* file_name =
-      SteamRemoteStorage()->GetFileNameAndSize(index, &file_size);
-  Nan::Set(result, Nan::New("name").ToLocalChecked(),
-           Nan::New(file_name).ToLocalChecked());
+  const char *file_name = SteamRemoteStorage()->GetFileNameAndSize(index, &file_size);
+  Nan::Set(result, Nan::New("name").ToLocalChecked(), Nan::New(file_name).ToLocalChecked());
   Nan::Set(result, Nan::New("size").ToLocalChecked(), Nan::New(file_size));
   info.GetReturnValue().Set(result);
 }
@@ -188,6 +168,6 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
 
 SteamAPIRegistry::Add X(RegisterAPIs);
 
-}  // namespace
-}  // namespace api
-}  // namespace greenworks
+} // namespace
+} // namespace api
+} // namespace greenworks

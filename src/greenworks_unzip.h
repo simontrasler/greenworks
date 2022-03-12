@@ -23,6 +23,6 @@ namespace greenworks {
 
 int unzip(const char *zipfilename, const char *dirname, const char *password);
 
-}  // namespace greenworks
+} // namespace greenworks
 
-#endif  // GREENWORKS_UNZIP_H_
+#endif // GREENWORKS_UNZIP_H_

@@ -13,20 +13,20 @@ namespace utils {
 
 void sleep(int milliseconds);
 
-bool ReadFile(const char* path, char** content, int* length);
+bool ReadFile(const char *path, char **content, int *length);
 
-bool WriteFile(const std::string& target_path, char* content, int length);
+bool WriteFile(const std::string &target_path, char *content, int length);
 
-std::string GetFileNameFromPath(const std::string& file_path);
+std::string GetFileNameFromPath(const std::string &file_path);
 
-bool UpdateFileLastUpdatedTime(const char* file_path, time_t time);
+bool UpdateFileLastUpdatedTime(const char *file_path, time_t time);
 
-int64 GetFileLastUpdatedTime(const char* file_path);
+int64 GetFileLastUpdatedTime(const char *file_path);
 
 std::string uint64ToString(uint64 value);
 
 uint64 strToUint64(std::string);
 
-}  // namespace utils
+} // namespace utils
 
-#endif  // SRC_GREENWORKS_UTILS_H_
+#endif // SRC_GREENWORKS_UTILS_H_

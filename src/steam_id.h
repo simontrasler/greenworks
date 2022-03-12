@@ -11,7 +11,7 @@
 namespace greenworks {
 
 class SteamID : public Nan::ObjectWrap {
- public:
+public:
   static v8::Local<v8::Object> Create(CSteamID steam_id);
 
   static NAN_METHOD(IsAnonymous);
@@ -36,13 +36,13 @@ class SteamID : public Nan::ObjectWrap {
   static NAN_METHOD(GetRelationship);
   static NAN_METHOD(GetSteamLevel);
 
- private:
+private:
   explicit SteamID(CSteamID steam_id) : steam_id_(steam_id) {}
   ~SteamID() override {}
 
   CSteamID steam_id_;
 };
 
-}  // namespace greenworks
+} // namespace greenworks
 
-#endif  // SRC_STEAM_ID_H_
+#endif // SRC_STEAM_ID_H_

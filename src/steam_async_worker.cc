@@ -6,33 +6,27 @@
 
 #include "v8.h"
 
-#include "steam/steam_api.h"
 #include "greenworks_utils.h"
+#include "steam/steam_api.h"
 
 namespace greenworks {
 
-SteamAsyncWorker::SteamAsyncWorker(Nan::Callback* success_callback,
-    Nan::Callback* error_callback): Nan::AsyncWorker(success_callback),
-                                    error_callback_(error_callback) {
-}
+SteamAsyncWorker::SteamAsyncWorker(Nan::Callback *success_callback, Nan::Callback *error_callback)
+    : Nan::AsyncWorker(success_callback), error_callback_(error_callback) {}
 
-SteamAsyncWorker::~SteamAsyncWorker() {
-  delete error_callback_;
-}
+SteamAsyncWorker::~SteamAsyncWorker() { delete error_callback_; }
 
 void SteamAsyncWorker::HandleErrorCallback() {
-  if (!error_callback_) return;
+  if (!error_callback_)
+    return;
   Nan::HandleScope scope;
-  v8::Local<v8::Value> argv[] = { Nan::New(ErrorMessage()).ToLocalChecked() };
+  v8::Local<v8::Value> argv[] = {Nan::New(ErrorMessage()).ToLocalChecked()};
   Nan::AsyncResource resource("greenworks:SteamAsyncWorker.HandleErrorCallback");
   error_callback_->Call(1, argv, &resource);
 }
 
-SteamCallbackAsyncWorker::SteamCallbackAsyncWorker(
-    Nan::Callback* success_callback, Nan::Callback* error_callback):
-        SteamAsyncWorker(success_callback, error_callback),
-        is_completed_(false) {
-}
+SteamCallbackAsyncWorker::SteamCallbackAsyncWorker(Nan::Callback *success_callback, Nan::Callback *error_callback)
+    : SteamAsyncWorker(success_callback, error_callback), is_completed_(false) {}
 
 void SteamCallbackAsyncWorker::WaitForCompleted() {
   while (!is_completed_) {
@@ -41,4 +35,4 @@ void SteamCallbackAsyncWorker::WaitForCompleted() {
   }
 }
 
-}  // namespace greenworks
+} // namespace greenworks

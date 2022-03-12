@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "nan.h"
-#include "steam/steam_api.h"
 #include "steam/isteamapps.h"
+#include "steam/steam_api.h"
 #include "v8.h"
 
 #include "steam_api_registry.h"
@@ -20,11 +20,11 @@ NAN_METHOD(GetDLCCount) {
 
 NAN_METHOD(GetDLCDataByIndex) {
   Nan::HandleScope scope;
-  
+
   if (info.Length() < 1 || !info[0]->IsInt32()) {
     THROW_BAD_ARGS("Bad arguments; expected: index [int32]");
   }
-  
+
   int32 index = Nan::To<int32>(info[0]).FromJust();
   AppId_t app_id;
   bool available;
@@ -37,8 +37,7 @@ NAN_METHOD(GetDLCDataByIndex) {
     Nan::Set(result, Nan::New("available").ToLocalChecked(), Nan::New(available));
     Nan::Set(result, Nan::New("name").ToLocalChecked(), Nan::New(name).ToLocalChecked());
     info.GetReturnValue().Set(result);
-  }
-  else {
+  } else {
     info.GetReturnValue().Set(Nan::Undefined());
   }
 }
@@ -82,6 +81,6 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
 
 SteamAPIRegistry::Add X(RegisterAPIs);
 
-}  // namespace
-}  // namespace api
-}  // namespace greenworks
+} // namespace
+} // namespace api
+} // namespace greenworks

@@ -180,13 +180,7 @@ NAN_METHOD(CreateLobby) {
   }
   auto lobby_type = static_cast<ELobbyType>(Nan::To<int32>(info[0]).FromJust());
 
-  info.GetReturnValue().Set(
-    Nan::New(
-      utils::uint64ToString(
-        SteamMatchmaking()->CreateLobby(lobby_type, Nan::To<int32>(info[1]).FromJust())
-      )
-    ).ToLocalChecked()
-  );
+  info.GetReturnValue().Set(Nan::New(utils::uint64ToString(SteamMatchmaking()->CreateLobby(lobby_type, Nan::To<int32>(info[1]).FromJust()))).ToLocalChecked());
 }
 
 NAN_METHOD(DeleteLobbyData) {
@@ -200,9 +194,7 @@ NAN_METHOD(DeleteLobbyData) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    SteamMatchmaking()->DeleteLobbyData(steam_id, pch_key_str.data())
-  );
+  info.GetReturnValue().Set(SteamMatchmaking()->DeleteLobbyData(steam_id, pch_key_str.data()));
 }
 
 NAN_METHOD(GetLobbyByIndex) {
@@ -226,11 +218,7 @@ NAN_METHOD(GetLobbyData) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    Nan::New(
-      SteamMatchmaking()->GetLobbyData(steam_id, pch_key_str.data())
-    ).ToLocalChecked()
-  );
+  info.GetReturnValue().Set(Nan::New(SteamMatchmaking()->GetLobbyData(steam_id, pch_key_str.data())).ToLocalChecked());
 }
 
 NAN_METHOD(GetLobbyMemberByIndex) {
@@ -258,11 +246,7 @@ NAN_METHOD(GetNumLobbyMembers) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    Nan::New<v8::Integer>(
-        SteamMatchmaking()->GetNumLobbyMembers(steam_id)
-    )
-  );
+  info.GetReturnValue().Set(Nan::New<v8::Integer>(SteamMatchmaking()->GetNumLobbyMembers(steam_id)));
 }
 
 NAN_METHOD(GetLobbyOwner) {
@@ -292,9 +276,7 @@ NAN_METHOD(InviteUserToLobby) {
   if (!steam_id_lobby.IsValid() || !steam_id_user.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    SteamMatchmaking()->InviteUserToLobby(steam_id_lobby, steam_id_user)
-  );
+  info.GetReturnValue().Set(SteamMatchmaking()->InviteUserToLobby(steam_id_lobby, steam_id_user));
 }
 
 NAN_METHOD(JoinLobby) {
@@ -307,13 +289,7 @@ NAN_METHOD(JoinLobby) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    Nan::New(
-      utils::uint64ToString(
-        SteamMatchmaking()->JoinLobby(steam_id)
-      )
-    ).ToLocalChecked()
-  );
+  info.GetReturnValue().Set(Nan::New(utils::uint64ToString(SteamMatchmaking()->JoinLobby(steam_id))).ToLocalChecked());
 }
 
 NAN_METHOD(LeaveLobby) {
@@ -341,9 +317,7 @@ NAN_METHOD(SetLobbyData) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    SteamMatchmaking()->SetLobbyData(steam_id, pch_key_str.data(), pch_value_str.data())
-  );
+  info.GetReturnValue().Set(SteamMatchmaking()->SetLobbyData(steam_id, pch_key_str.data(), pch_value_str.data()));
 }
 
 NAN_METHOD(SetLobbyJoinable) {
@@ -356,9 +330,7 @@ NAN_METHOD(SetLobbyJoinable) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    SteamMatchmaking()->SetLobbyJoinable(steam_id, Nan::To<int32>(info[0]).FromJust())
-  );
+  info.GetReturnValue().Set(SteamMatchmaking()->SetLobbyJoinable(steam_id, Nan::To<int32>(info[0]).FromJust()));
 }
 
 NAN_METHOD(SetLobbyOwner) {
@@ -373,9 +345,7 @@ NAN_METHOD(SetLobbyOwner) {
   if (!steam_id_lobby.IsValid() || !steam_id_user.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-    SteamMatchmaking()->SetLobbyOwner(steam_id_lobby, steam_id_user)
-  );
+  info.GetReturnValue().Set(SteamMatchmaking()->SetLobbyOwner(steam_id_lobby, steam_id_user));
 }
 
 NAN_METHOD(SetLobbyType) {
@@ -389,10 +359,8 @@ NAN_METHOD(SetLobbyType) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
   auto lobby_type = static_cast<ELobbyType>(Nan::To<int32>(info[0]).FromJust());
-  
-  info.GetReturnValue().Set(
-    SteamMatchmaking()->SetLobbyType(steam_id, lobby_type)
-  );
+
+  info.GetReturnValue().Set(SteamMatchmaking()->SetLobbyType(steam_id, lobby_type));
 }
 
 void RegisterAPIs(v8::Local<v8::Object> target) {
@@ -420,6 +388,6 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
 
 SteamAPIRegistry::Add X(RegisterAPIs);
 
-}  // namespace
-}  // namespace api
-}  // namespace greenworks
+} // namespace
+} // namespace api
+} // namespace greenworks

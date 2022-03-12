@@ -20,15 +20,13 @@ NAN_METHOD(ActivateAchievement) {
     THROW_BAD_ARGS("Bad arguments");
   }
   std::string achievement = (*(Nan::Utf8String(info[0])));
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[1].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[2]->IsFunction())
     error_callback = new Nan::Callback(info[2].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::ActivateAchievementWorker(
-      success_callback, error_callback, achievement));
+  Nan::AsyncQueueWorker(new greenworks::ActivateAchievementWorker(success_callback, error_callback, achievement));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -43,8 +41,7 @@ NAN_METHOD(IndicateAchievementProgress) {
   uint32 current = Nan::To<uint32>(info[1]).FromJust();
   uint32 max = Nan::To<uint32>(info[2]).FromJust();
 
-  info.GetReturnValue().Set(
-      Nan::New(SteamUserStats()->IndicateAchievementProgress(achievement.c_str(), current, max)));
+  info.GetReturnValue().Set(Nan::New(SteamUserStats()->IndicateAchievementProgress(achievement.c_str(), current, max)));
 }
 
 NAN_METHOD(GetAchievement) {
@@ -54,14 +51,12 @@ NAN_METHOD(GetAchievement) {
   }
 
   std::string achievement = (*(Nan::Utf8String(info[0])));
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[1].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[2]->IsFunction())
     error_callback = new Nan::Callback(info[2].As<v8::Function>());
-  Nan::AsyncQueueWorker(new greenworks::GetAchievementWorker(
-      success_callback, error_callback, achievement));
+  Nan::AsyncQueueWorker(new greenworks::GetAchievementWorker(success_callback, error_callback, achievement));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -71,15 +66,13 @@ NAN_METHOD(ClearAchievement) {
     THROW_BAD_ARGS("Bad arguments");
   }
   std::string achievement = (*(Nan::Utf8String(info[0])));
-  Nan::Callback* success_callback =
-      new Nan::Callback(info[1].As<v8::Function>());
-  Nan::Callback* error_callback = nullptr;
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
 
   if (info.Length() > 2 && info[2]->IsFunction())
     error_callback = new Nan::Callback(info[2].As<v8::Function>());
 
-  Nan::AsyncQueueWorker(new greenworks::ClearAchievementWorker(
-      success_callback, error_callback, achievement));
+  Nan::AsyncQueueWorker(new greenworks::ClearAchievementWorker(success_callback, error_callback, achievement));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -88,16 +81,14 @@ NAN_METHOD(GetAchievementNames) {
   auto count = static_cast<int>(SteamUserStats()->GetNumAchievements());
   v8::Local<v8::Array> names = Nan::New<v8::Array>(count);
   for (int i = 0; i < count; ++i) {
-    Nan::Set(
-        names, i,
-        Nan::New(SteamUserStats()->GetAchievementName(i)).ToLocalChecked());
+    Nan::Set(names, i, Nan::New(SteamUserStats()->GetAchievementName(i)).ToLocalChecked());
   }
   info.GetReturnValue().Set(names);
 }
 
 NAN_METHOD(GetNumberOfAchievements) {
   Nan::HandleScope scope;
-  ISteamUserStats* steam_user_stats = SteamUserStats();
+  ISteamUserStats *steam_user_stats = SteamUserStats();
   info.GetReturnValue().Set(steam_user_stats->GetNumAchievements());
 }
 
@@ -112,6 +103,6 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
 
 SteamAPIRegistry::Add X(RegisterAPIs);
 
-}  // namespace
-}  // namespace api
-}  // namespace greenworks
+} // namespace
+} // namespace api
+} // namespace greenworks

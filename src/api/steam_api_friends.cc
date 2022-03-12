@@ -20,13 +20,11 @@ void InitFriendFlags(v8::Local<v8::Object> exports) {
   v8::Local<v8::Object> friend_flags = Nan::New<v8::Object>();
   SET_TYPE(friend_flags, "None", k_EFriendFlagNone);
   SET_TYPE(friend_flags, "Blocked", k_EFriendFlagBlocked);
-  SET_TYPE(friend_flags, "FriendshipRequested",
-           k_EFriendFlagFriendshipRequested);
+  SET_TYPE(friend_flags, "FriendshipRequested", k_EFriendFlagFriendshipRequested);
   SET_TYPE(friend_flags, "Immediate", k_EFriendFlagImmediate);
   SET_TYPE(friend_flags, "ClanMember", k_EFriendFlagClanMember);
   SET_TYPE(friend_flags, "OnGameServer", k_EFriendFlagOnGameServer);
-  SET_TYPE(friend_flags, "RequestingFriendship",
-           k_EFriendFlagRequestingFriendship);
+  SET_TYPE(friend_flags, "RequestingFriendship", k_EFriendFlagRequestingFriendship);
   SET_TYPE(friend_flags, "RequestingInfo", k_EFriendFlagRequestingInfo);
   SET_TYPE(friend_flags, "Ignored", k_EFriendFlagIgnored);
   SET_TYPE(friend_flags, "IgnoredFriend", k_EFriendFlagIgnoredFriend);
@@ -36,29 +34,22 @@ void InitFriendFlags(v8::Local<v8::Object> exports) {
   SET_TYPE(friend_flags, "All", k_EFriendFlagAll);
   Nan::Persistent<v8::Object> constructor;
   constructor.Reset(friend_flags);
-  Nan::Set(exports,
-           Nan::New("FriendFlags").ToLocalChecked(),
-           friend_flags);
+  Nan::Set(exports, Nan::New("FriendFlags").ToLocalChecked(), friend_flags);
 }
 
 void InitFriendRelationship(v8::Local<v8::Object> exports) {
   v8::Local<v8::Object> relationship = Nan::New<v8::Object>();
   SET_TYPE(relationship, "None", k_EFriendRelationshipNone);
   SET_TYPE(relationship, "Blocked", k_EFriendRelationshipBlocked);
-  SET_TYPE(relationship, "RequestRecipient",
-           k_EFriendRelationshipRequestRecipient);
+  SET_TYPE(relationship, "RequestRecipient", k_EFriendRelationshipRequestRecipient);
   SET_TYPE(relationship, "Friend", k_EFriendRelationshipFriend);
-  SET_TYPE(relationship, "RequestInitiator",
-           k_EFriendRelationshipRequestInitiator);
+  SET_TYPE(relationship, "RequestInitiator", k_EFriendRelationshipRequestInitiator);
   SET_TYPE(relationship, "Ignored", k_EFriendRelationshipIgnored);
   SET_TYPE(relationship, "IgnoredFriend", k_EFriendRelationshipIgnoredFriend);
-  SET_TYPE(relationship, "Suggested",
-           k_EFriendRelationshipSuggested_DEPRECATED);
+  SET_TYPE(relationship, "Suggested", k_EFriendRelationshipSuggested_DEPRECATED);
   Nan::Persistent<v8::Object> constructor;
   constructor.Reset(relationship);
-  Nan::Set(exports,
-           Nan::New("FriendRelationship").ToLocalChecked(),
-           relationship);
+  Nan::Set(exports, Nan::New("FriendRelationship").ToLocalChecked(), relationship);
 }
 
 void InitFriendPersonaChange(v8::Local<v8::Object> exports) {
@@ -72,16 +63,13 @@ void InitFriendPersonaChange(v8::Local<v8::Object> exports) {
   SET_TYPE(persona_change, "Avatar", k_EPersonaChangeAvatar);
   SET_TYPE(persona_change, "JoinedSource", k_EPersonaChangeJoinedSource);
   SET_TYPE(persona_change, "LeftSource", k_EPersonaChangeLeftSource);
-  SET_TYPE(persona_change, "RelationshipChanged",
-           k_EPersonaChangeRelationshipChanged);
+  SET_TYPE(persona_change, "RelationshipChanged", k_EPersonaChangeRelationshipChanged);
   SET_TYPE(persona_change, "NameFirstSet", k_EPersonaChangeNameFirstSet);
   SET_TYPE(persona_change, "NickName", k_EPersonaChangeNickname);
   SET_TYPE(persona_change, "SteamLevel", k_EPersonaChangeSteamLevel);
   Nan::Persistent<v8::Object> constructor;
   constructor.Reset(persona_change);
-  Nan::Set(exports,
-           Nan::New("PersonaChange").ToLocalChecked(),
-           persona_change);
+  Nan::Set(exports, Nan::New("PersonaChange").ToLocalChecked(), persona_change);
 }
 
 void InitAccountType(v8::Local<v8::Object> exports) {
@@ -99,9 +87,7 @@ void InitAccountType(v8::Local<v8::Object> exports) {
   SET_TYPE(account_type, "AnonymousUser", k_EAccountTypeAnonUser);
   Nan::Persistent<v8::Object> constructor;
   constructor.Reset(account_type);
-  Nan::Set(exports,
-           Nan::New("AccountType").ToLocalChecked(),
-           account_type);
+  Nan::Set(exports, Nan::New("AccountType").ToLocalChecked(), account_type);
 }
 
 void InitChatEntryType(v8::Local<v8::Object> exports) {
@@ -111,8 +97,7 @@ void InitChatEntryType(v8::Local<v8::Object> exports) {
   SET_TYPE(chat_entry_type, "Typing", k_EChatEntryTypeTyping);
   SET_TYPE(chat_entry_type, "InviteGame", k_EChatEntryTypeInviteGame);
   SET_TYPE(chat_entry_type, "Emote", k_EChatEntryTypeEmote);
-  SET_TYPE(chat_entry_type, "LeftConversation",
-           k_EChatEntryTypeLeftConversation);
+  SET_TYPE(chat_entry_type, "LeftConversation", k_EChatEntryTypeLeftConversation);
   SET_TYPE(chat_entry_type, "Entered", k_EChatEntryTypeEntered);
   SET_TYPE(chat_entry_type, "WasKicked", k_EChatEntryTypeWasKicked);
   SET_TYPE(chat_entry_type, "WasBanned", k_EChatEntryTypeWasBanned);
@@ -121,9 +106,7 @@ void InitChatEntryType(v8::Local<v8::Object> exports) {
   SET_TYPE(chat_entry_type, "LinkBlocked", k_EChatEntryTypeLinkBlocked);
   Nan::Persistent<v8::Object> constructor;
   constructor.Reset(chat_entry_type);
-  Nan::Set(exports,
-           Nan::New("ChatEntryType").ToLocalChecked(),
-           chat_entry_type);
+  Nan::Set(exports, Nan::New("ChatEntryType").ToLocalChecked(), chat_entry_type);
 }
 
 NAN_METHOD(GetFriendCount) {
@@ -133,8 +116,7 @@ NAN_METHOD(GetFriendCount) {
   }
   auto friend_flag = static_cast<EFriendFlags>(Nan::To<int32>(info[0]).FromJust());
 
-  info.GetReturnValue().Set(Nan::New<v8::Integer>(
-    SteamFriends()->GetFriendCount(friend_flag)));
+  info.GetReturnValue().Set(Nan::New<v8::Integer>(SteamFriends()->GetFriendCount(friend_flag)));
 }
 
 NAN_METHOD(GetFriends) {
@@ -163,8 +145,7 @@ NAN_METHOD(GetSmallFriendAvatar) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-      SteamFriends()->GetSmallFriendAvatar(steam_id));
+  info.GetReturnValue().Set(SteamFriends()->GetSmallFriendAvatar(steam_id));
 }
 
 NAN_METHOD(GetMediumFriendAvatar) {
@@ -177,8 +158,7 @@ NAN_METHOD(GetMediumFriendAvatar) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-      SteamFriends()->GetMediumFriendAvatar(steam_id));
+  info.GetReturnValue().Set(SteamFriends()->GetMediumFriendAvatar(steam_id));
 }
 
 NAN_METHOD(GetLargeFriendAvatar) {
@@ -191,8 +171,7 @@ NAN_METHOD(GetLargeFriendAvatar) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-      SteamFriends()->GetLargeFriendAvatar(steam_id));
+  info.GetReturnValue().Set(SteamFriends()->GetLargeFriendAvatar(steam_id));
 }
 
 NAN_METHOD(RequestUserInformation) {
@@ -206,8 +185,7 @@ NAN_METHOD(RequestUserInformation) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-      SteamFriends()->RequestUserInformation(steam_id, require_name_only));
+  info.GetReturnValue().Set(SteamFriends()->RequestUserInformation(steam_id, require_name_only));
 }
 
 NAN_METHOD(SetListenForFriendsMessages) {
@@ -216,8 +194,7 @@ NAN_METHOD(SetListenForFriendsMessages) {
     THROW_BAD_ARGS("Bad arguments");
   }
   bool intercept_enabled = Nan::To<bool>(info[0]).FromJust();
-  info.GetReturnValue().Set(
-      SteamFriends()->SetListenForFriendsMessages(intercept_enabled));
+  info.GetReturnValue().Set(SteamFriends()->SetListenForFriendsMessages(intercept_enabled));
 }
 
 NAN_METHOD(ReplyToFriendMessage) {
@@ -231,15 +208,12 @@ NAN_METHOD(ReplyToFriendMessage) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
   std::string message_being_sent(*(Nan::Utf8String(info[1])));
-  info.GetReturnValue().Set(SteamFriends()->ReplyToFriendMessage(
-      steam_id,
-      message_being_sent.c_str()));
+  info.GetReturnValue().Set(SteamFriends()->ReplyToFriendMessage(steam_id, message_being_sent.c_str()));
 }
 
 NAN_METHOD(GetFriendMessage) {
   Nan::HandleScope scope;
-  if (info.Length() < 3 || !info[0]->IsString() || !info[1]->IsInt32() ||
-      !info[2]->IsInt32()) {
+  if (info.Length() < 3 || !info[0]->IsString() || !info[1]->IsInt32() || !info[2]->IsInt32()) {
     THROW_BAD_ARGS("Bad arguments");
   }
   std::string steam_id_str(*(Nan::Utf8String(info[0])));
@@ -251,17 +225,13 @@ NAN_METHOD(GetFriendMessage) {
   int maximam_size = Nan::To<int32>(info[2]).FromJust();
 
   EChatEntryType chat_type;
-  std::unique_ptr<char[]>message(new char[maximam_size]);
+  std::unique_ptr<char[]> message(new char[maximam_size]);
 
-  int message_size = SteamFriends()->GetFriendMessage(
-      steam_id, message_id, message.get(),
-      maximam_size, &chat_type);
+  int message_size = SteamFriends()->GetFriendMessage(steam_id, message_id, message.get(), maximam_size, &chat_type);
 
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
-  Nan::Set(result, Nan::New("message").ToLocalChecked(),
-           Nan::New(message.get(), message_size).ToLocalChecked());
-  Nan::Set(result, Nan::New("chatEntryType").ToLocalChecked(),
-           Nan::New(chat_type));
+  Nan::Set(result, Nan::New("message").ToLocalChecked(), Nan::New(message.get(), message_size).ToLocalChecked());
+  Nan::Set(result, Nan::New("chatEntryType").ToLocalChecked(), Nan::New(chat_type));
   info.GetReturnValue().Set(result);
 }
 
@@ -275,9 +245,7 @@ NAN_METHOD(GetFriendPersonaName) {
   if (!steam_id.IsValid()) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
-  info.GetReturnValue().Set(
-      Nan::New(SteamFriends()->GetFriendPersonaName(steam_id))
-          .ToLocalChecked());
+  info.GetReturnValue().Set(Nan::New(SteamFriends()->GetFriendPersonaName(steam_id)).ToLocalChecked());
 }
 
 NAN_METHOD(SetPlayedWith) {
@@ -301,9 +269,7 @@ NAN_METHOD(SetRichPresence) {
   std::string pch_key_str(*(Nan::Utf8String(info[0])));
   std::string pch_value_str(*(Nan::Utf8String(info[1])));
 
-  info.GetReturnValue().Set(
-    SteamFriends()->SetRichPresence(pch_key_str.data(), pch_value_str.data())
-  );
+  info.GetReturnValue().Set(SteamFriends()->SetRichPresence(pch_key_str.data(), pch_value_str.data()));
 }
 
 NAN_METHOD(GetFriendRichPresence) {
@@ -317,9 +283,7 @@ NAN_METHOD(GetFriendRichPresence) {
     THROW_BAD_ARGS("Steam ID is invalid");
   }
   std::string pch_key_str(*(Nan::Utf8String(info[1])));
-  info.GetReturnValue().Set(
-      Nan::New(SteamFriends()->GetFriendRichPresence(steam_id, pch_key_str.data()))
-          .ToLocalChecked());
+  info.GetReturnValue().Set(Nan::New(SteamFriends()->GetFriendRichPresence(steam_id, pch_key_str.data())).ToLocalChecked());
 }
 
 NAN_METHOD(ClearRichPresence) {
@@ -347,17 +311,13 @@ NAN_METHOD(GetFriendGamePlayed) {
   }
 
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
-  Nan::Set(result, Nan::New("m_gameID").ToLocalChecked(), Nan::New(
-    utils::uint64ToString(friendInfo.m_gameID.ToUint64())
-  ).ToLocalChecked());
+  Nan::Set(result, Nan::New("m_gameID").ToLocalChecked(), Nan::New(utils::uint64ToString(friendInfo.m_gameID.ToUint64())).ToLocalChecked());
 
   Nan::Set(result, Nan::New("m_unGameIP").ToLocalChecked(), Nan::New<v8::Integer>(friendInfo.m_unGameIP));
   Nan::Set(result, Nan::New("m_usGamePort").ToLocalChecked(), Nan::New<v8::Integer>(friendInfo.m_usGamePort));
   Nan::Set(result, Nan::New("m_usQueryPort").ToLocalChecked(), Nan::New<v8::Integer>(friendInfo.m_usQueryPort));
 
-  Nan::Set(result, Nan::New("m_steamIDLobby").ToLocalChecked(), Nan::New(
-    utils::uint64ToString(friendInfo.m_steamIDLobby.ConvertToUint64())
-  ).ToLocalChecked());
+  Nan::Set(result, Nan::New("m_steamIDLobby").ToLocalChecked(), Nan::New(utils::uint64ToString(friendInfo.m_steamIDLobby.ConvertToUint64())).ToLocalChecked());
 
   info.GetReturnValue().Set(result);
 }
@@ -389,6 +349,21 @@ NAN_METHOD(ActivateGameOverlayToUser) {
   SteamFriends()->ActivateGameOverlayToUser(pch_dialog_str.data(), steam_id);
 }
 
+NAN_METHOD(GetAccountID) {
+  AccountID_t account = SteamUser()->GetSteamID().GetAccountID();
+  info.GetReturnValue().Set(Nan::New(utils::uint64ToString(account)).ToLocalChecked());
+}
+
+NAN_METHOD(GetRawSteamID) {
+  CSteamID account = SteamUser()->GetSteamID();
+  info.GetReturnValue().Set(Nan::New(utils::uint64ToString(account.ConvertToUint64())).ToLocalChecked());
+}
+
+NAN_METHOD(GetAppID) {
+  uint32 app = SteamUtils()->GetAppID();
+  info.GetReturnValue().Set(Nan::New(utils::uint64ToString(app)).ToLocalChecked());
+}
+
 void RegisterAPIs(v8::Local<v8::Object> target) {
   InitFriendFlags(target);
   InitFriendRelationship(target);
@@ -396,6 +371,9 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
   InitAccountType(target);
   InitChatEntryType(target);
 
+  SET_FUNCTION("getAccountID", GetAccountID);
+  SET_FUNCTION("getRawSteamID", GetRawSteamID);
+  SET_FUNCTION("getAppID", GetAppID);
   SET_FUNCTION("getFriendCount", GetFriendCount);
   SET_FUNCTION("getFriends", GetFriends);
   SET_FUNCTION("getSmallFriendAvatar", GetSmallFriendAvatar);
@@ -417,6 +395,6 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
 
 SteamAPIRegistry::Add X(RegisterAPIs);
 
-}  // namespace
-}  // namespace api
-}  // namespace greenworks
+} // namespace
+} // namespace api
+} // namespace greenworks
