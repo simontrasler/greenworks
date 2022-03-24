@@ -527,36 +527,30 @@ void QueryUserUGCWorker::Execute() {
   WaitForCompleted();
 }
 
-DownloadItemWorker::DownloadItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, UGCHandle_t download_file_handle,
-                                       const std::string &download_dir)
-    : SteamCallbackAsyncWorker(success_callback, error_callback), download_file_handle_(download_file_handle), download_dir_(download_dir) {}
-
+DownloadItemWorker::DownloadItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t published_file_id)
+    : SteamCallbackAsyncWorker(success_callback, error_callback), published_file_id_(published_file_id), m_CallbackDownloadCompleted( this, &DownloadItemWorker::OnDownloadCompleted ) {}
 void DownloadItemWorker::Execute() {
-  SteamAPICall_t download_item_result = SteamRemoteStorage()->UGCDownload(download_file_handle_, 0);
-  call_result_.Set(download_item_result, this, &DownloadItemWorker::OnDownloadCompleted);
+  if (SteamUGC()->DownloadItem(published_file_id_, false)) {
+  	// call_result_.Set(nullptr, this, &DownloadItemWorker::OnDownloadCompleted);
+		// currently nonfunctional - don't know how to setup this callback properly
+	} else {
+		is_completed_ = true;
+	}
 
   // Wait for downloading file completed.
   WaitForCompleted();
 }
-
-void DownloadItemWorker::OnDownloadCompleted(RemoteStorageDownloadUGCResult_t *result, bool io_failure) {
-  if (io_failure) {
-    SetErrorMessage("Error on downloading file: Steam API IO Failure");
-  } else if (result->m_eResult == k_EResultOK) {
-    std::string target_path = GetAbsoluteFilePath(result->m_pchFileName, download_dir_);
-
-    int file_size_in_bytes = result->m_nSizeInBytes;
-    auto *content = new char[file_size_in_bytes];
-
-    SteamRemoteStorage()->UGCRead(download_file_handle_, content, file_size_in_bytes, 0, k_EUGCRead_Close);
-    if (!utils::WriteFile(target_path, content, file_size_in_bytes)) {
-      SetErrorMessage("Error on saving file on local machine.");
-    }
-    delete[] content;
-  } else {
-    SetErrorMessage("Error on downloading file.");
-  }
-  is_completed_ = true;
+void DownloadItemWorker::OnDownloadCompleted(DownloadItemResult_t *result) {
+	if (result->m_unAppID == SteamUtils()->GetAppID() && result->m_nPublishedFileId == published_file_id_) {
+		result_ = result->m_eResult;
+		is_completed_ = true;
+	}
+}
+void DownloadItemWorker::HandleOKCallback() {
+  Nan::HandleScope scope;
+  v8::Local<v8::Value> argv[] = {Nan::New(result_)};
+  Nan::AsyncResource resource("greenworks:DownloadItemWorker.HandleOKCallback");
+  callback->Call(1, argv, &resource);
 }
 
 SynchronizeItemsWorker::SynchronizeItemsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, const std::string &download_dir, uint32 app_id,
@@ -893,12 +887,15 @@ UnsubscribePublishedFileWorker::UnsubscribePublishedFileWorker(Nan::Callback *su
                                                                PublishedFileId_t unsubscribe_file_id)
     : SteamCallbackAsyncWorker(success_callback, error_callback), unsubscribe_file_id_(unsubscribe_file_id) {}
 void UnsubscribePublishedFileWorker::Execute() {
-  SteamAPICall_t result = SteamRemoteStorage()->UnsubscribePublishedFile(unsubscribe_file_id_);
+  SteamAPICall_t result = SteamUGC()->UnsubscribeItem(unsubscribe_file_id_);
   call_result_.Set(result, this, &UnsubscribePublishedFileWorker::OnUnsubscribeCompleted);
   // Wait for unsubscribing job completed.
   WaitForCompleted();
 }
 void UnsubscribePublishedFileWorker::OnUnsubscribeCompleted(RemoteStorageUnsubscribePublishedFileResult_t *result, bool io_failure) {
+  if (io_failure) {
+    SetErrorMessage("Error on downloading file: Steam API IO Failure");
+  }
 	result_ = result->m_eResult;
 	is_completed_ = true;
 }
@@ -913,12 +910,15 @@ SubscribePublishedFileWorker::SubscribePublishedFileWorker(Nan::Callback *succes
                                                                PublishedFileId_t Subscribe_file_id)
     : SteamCallbackAsyncWorker(success_callback, error_callback), subscribe_file_id_(Subscribe_file_id) {}
 void SubscribePublishedFileWorker::Execute() {
-  SteamAPICall_t result = SteamRemoteStorage()->SubscribePublishedFile(subscribe_file_id_);
+  SteamAPICall_t result = SteamUGC()->SubscribeItem(subscribe_file_id_);
   call_result_.Set(result, this, &SubscribePublishedFileWorker::OnSubscribeCompleted);
   // Wait for Subscribing job completed.
   WaitForCompleted();
 }
 void SubscribePublishedFileWorker::OnSubscribeCompleted(RemoteStorageSubscribePublishedFileResult_t *result, bool io_failure) {
+  if (io_failure) {
+    SetErrorMessage("Error on downloading file: Steam API IO Failure");
+  }
 	result_ = result->m_eResult;
 	is_completed_ = true;
 }
