@@ -892,15 +892,42 @@ void SynchronizeItemsWorker::HandleOKCallback() {
 UnsubscribePublishedFileWorker::UnsubscribePublishedFileWorker(Nan::Callback *success_callback, Nan::Callback *error_callback,
                                                                PublishedFileId_t unsubscribe_file_id)
     : SteamCallbackAsyncWorker(success_callback, error_callback), unsubscribe_file_id_(unsubscribe_file_id) {}
-
 void UnsubscribePublishedFileWorker::Execute() {
-  SteamAPICall_t unsubscribed_result = SteamRemoteStorage()->UnsubscribePublishedFile(unsubscribe_file_id_);
-  unsubscribe_call_result_.Set(unsubscribed_result, this, &UnsubscribePublishedFileWorker::OnUnsubscribeCompleted);
-
+  SteamAPICall_t result = SteamRemoteStorage()->UnsubscribePublishedFile(unsubscribe_file_id_);
+  call_result_.Set(result, this, &UnsubscribePublishedFileWorker::OnUnsubscribeCompleted);
   // Wait for unsubscribing job completed.
   WaitForCompleted();
 }
+void UnsubscribePublishedFileWorker::OnUnsubscribeCompleted(RemoteStorageUnsubscribePublishedFileResult_t *result, bool io_failure) {
+	result_ = result->m_eResult;
+	is_completed_ = true;
+}
+void UnsubscribePublishedFileWorker::HandleOKCallback() {
+  Nan::HandleScope scope;
+  v8::Local<v8::Value> argv[] = {Nan::New(result_)};
+  Nan::AsyncResource resource("greenworks:UnsubscribePublishedFileWorker.HandleOKCallback");
+  callback->Call(1, argv, &resource);
+}
 
-void UnsubscribePublishedFileWorker::OnUnsubscribeCompleted(RemoteStoragePublishedFileUnsubscribed_t *result, bool io_failure) { is_completed_ = true; }
+SubscribePublishedFileWorker::SubscribePublishedFileWorker(Nan::Callback *success_callback, Nan::Callback *error_callback,
+                                                               PublishedFileId_t Subscribe_file_id)
+    : SteamCallbackAsyncWorker(success_callback, error_callback), subscribe_file_id_(Subscribe_file_id) {}
+void SubscribePublishedFileWorker::Execute() {
+  SteamAPICall_t result = SteamRemoteStorage()->SubscribePublishedFile(subscribe_file_id_);
+  call_result_.Set(result, this, &SubscribePublishedFileWorker::OnSubscribeCompleted);
+  // Wait for Subscribing job completed.
+  WaitForCompleted();
+}
+void SubscribePublishedFileWorker::OnSubscribeCompleted(RemoteStorageSubscribePublishedFileResult_t *result, bool io_failure) {
+	result_ = result->m_eResult;
+	is_completed_ = true;
+}
+void SubscribePublishedFileWorker::HandleOKCallback() {
+  Nan::HandleScope scope;
+  v8::Local<v8::Value> argv[] = {Nan::New(result_)};
+  Nan::AsyncResource resource("greenworks:SubscribePublishedFileWorker.HandleOKCallback");
+  callback->Call(1, argv, &resource);
+}
+}
 
-} // namespace greenworks
+// namespace greenworks

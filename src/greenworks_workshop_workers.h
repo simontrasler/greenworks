@@ -186,17 +186,28 @@ private:
 class UnsubscribePublishedFileWorker : public SteamCallbackAsyncWorker {
 public:
   UnsubscribePublishedFileWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t unsubscribe_file_id);
-
-  void OnUnsubscribeCompleted(RemoteStoragePublishedFileUnsubscribed_t *result, bool io_failure);
-
+  void OnUnsubscribeCompleted(RemoteStorageUnsubscribePublishedFileResult_t *result, bool io_failure);
+  void HandleOKCallback() override;
   void Execute() override;
 
 private:
   PublishedFileId_t unsubscribe_file_id_;
-
-  CCallResult<UnsubscribePublishedFileWorker, RemoteStoragePublishedFileUnsubscribed_t> unsubscribe_call_result_;
+	EResult result_;
+  CCallResult<UnsubscribePublishedFileWorker, RemoteStorageUnsubscribePublishedFileResult_t> call_result_;
 };
 
+class SubscribePublishedFileWorker : public SteamCallbackAsyncWorker {
+public:
+  SubscribePublishedFileWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t subscribe_file_id);
+  void OnSubscribeCompleted(RemoteStorageSubscribePublishedFileResult_t *result, bool io_failure);
+  void HandleOKCallback() override;
+  void Execute() override;
+
+private:
+  PublishedFileId_t subscribe_file_id_;
+	EResult result_;
+  CCallResult<SubscribePublishedFileWorker, RemoteStorageSubscribePublishedFileResult_t> call_result_;
+};
 } // namespace greenworks
 
 #endif // SRC_GREENWORKS_WORKSHOP_WORKERS_H_
