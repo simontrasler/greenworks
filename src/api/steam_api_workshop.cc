@@ -367,6 +367,52 @@ NAN_METHOD(UGCGetItemInstallInfo) {
   }
 }
 
+NAN_METHOD(GetSubscribedItems) {
+  Nan::HandleScope scope;
+	uint32 numItems = SteamUGC()->GetNumSubscribedItems();
+  PublishedFileId_t* pvecPublishedFileID = new PublishedFileId_t[numItems];
+	uint32 numPopulatedItems = SteamUGC()->GetSubscribedItems(pvecPublishedFileID, numItems);
+
+	v8::Local<v8::Array> items = Nan::New<v8::Array>(static_cast<int>(numPopulatedItems));
+	for (size_t i = 0; i < numPopulatedItems; ++i) {
+		Nan::Set(items, i, Nan::New(utils::uint64ToString(pvecPublishedFileID[i])).ToLocalChecked());
+	}
+
+	delete[] pvecPublishedFileID;
+  info.GetReturnValue().Set(items);
+}
+
+NAN_METHOD(GetUGCDetails) {
+  Nan::HandleScope scope;
+
+  if (info.Length() < 2 || !info[0]->IsArray() || !info[1]->IsFunction()) {
+    THROW_BAD_ARGS("Bad arguments");
+  }
+
+	v8::Local<v8::Array> id_array = info[0].As<v8::Array>();
+	if (id_array->Length() <= 0) {
+    THROW_BAD_ARGS("Empty request");
+	}
+  if (id_array->Length() > kNumUGCResultsPerPage) {
+    THROW_BAD_ARGS("Can only request details for 50 ids at a time");
+  }
+	PublishedFileId_t* id_list = new PublishedFileId_t[id_array->Length()];
+  for (uint32_t i = 0; i < id_array->Length(); ++i) {
+    if (!Nan::Get(id_array, i).ToLocalChecked()->IsString())
+      THROW_BAD_ARGS("Bad arguments");
+    Nan::Utf8String item_id(Nan::Get(id_array, (i)).ToLocalChecked());
+    id_list[i] = utils::strToUint64(*item_id);
+  }
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
+
+  if (info.Length() > 2 && info[2]->IsFunction())
+    error_callback = new Nan::Callback(info[2].As<v8::Function>());
+
+  Nan::AsyncQueueWorker(new greenworks::QueryUGCDetailsWorker(success_callback, error_callback, id_list, id_array->Length()));
+  info.GetReturnValue().Set(Nan::Undefined());
+}
+
 void RegisterAPIs(v8::Local<v8::Object> target) {
   InitUgcMatchingTypes(target);
   InitUgcQueryTypes(target);
@@ -374,6 +420,8 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
   InitUserUgcList(target);
   InitUgcItemStates(target);
 
+	SET_FUNCTION("getUGCDetails", GetUGCDetails)
+	SET_FUNCTION("getSubscribedItems", GetSubscribedItems);
   SET_FUNCTION("fileShare", FileShare);
   SET_FUNCTION("_publishWorkshopFile", PublishWorkshopFile);
   SET_FUNCTION("_updatePublishedWorkshopFile", UpdatePublishedWorkshopFile);
