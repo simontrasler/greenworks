@@ -214,6 +214,9 @@ NAN_METHOD(UGCGetItems) {
   auto ugc_matching_type = static_cast<EUGCMatchingUGCType>(Nan::To<int32>(info[1]).FromJust());
   auto ugc_query_type = static_cast<EUGCQuery>(Nan::To<int32>(info[2]).FromJust());
 
+  auto required_tag = Nan::Get(options, (Nan::New("required_tag").ToLocalChecked()));
+  std::string required_tag_str = *(Nan::Utf8String(required_tag.ToLocalChecked()));
+
   Nan::Callback *success_callback = new Nan::Callback(info[3].As<v8::Function>());
   Nan::Callback *error_callback = nullptr;
 
@@ -222,7 +225,7 @@ NAN_METHOD(UGCGetItems) {
 
   Nan::AsyncQueueWorker(new greenworks::QueryAllUGCWorker(success_callback, error_callback, ugc_matching_type, ugc_query_type,
                                                           Nan::To<int32>(app_id.ToLocalChecked()).FromJust(),
-                                                          Nan::To<int32>(page_num.ToLocalChecked()).FromJust()));
+                                                          Nan::To<int32>(page_num.ToLocalChecked()).FromJust(), required_tag_str));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -243,6 +246,9 @@ NAN_METHOD(UGCGetUserItems) {
   auto ugc_list_order = static_cast<EUserUGCListSortOrder>(Nan::To<int32>(info[2]).FromJust());
   auto ugc_list = static_cast<EUserUGCList>(Nan::To<int32>(info[3]).FromJust());
 
+  auto required_tag = Nan::Get(options, (Nan::New("required_tag").ToLocalChecked()));
+  std::string required_tag_str = *(Nan::Utf8String(required_tag.ToLocalChecked()));
+
   Nan::Callback *success_callback = new Nan::Callback(info[4].As<v8::Function>());
   Nan::Callback *error_callback = nullptr;
 
@@ -251,7 +257,7 @@ NAN_METHOD(UGCGetUserItems) {
 
   Nan::AsyncQueueWorker(new greenworks::QueryUserUGCWorker(success_callback, error_callback, ugc_matching_type, ugc_list, ugc_list_order,
                                                            Nan::To<int32>(app_id.ToLocalChecked()).FromJust(),
-                                                           Nan::To<int32>(page_num.ToLocalChecked()).FromJust()));
+                                                           Nan::To<int32>(page_num.ToLocalChecked()).FromJust(), required_tag_str));
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
@@ -383,16 +389,16 @@ NAN_METHOD(UGCGetItemInstallInfo) {
 
 NAN_METHOD(GetSubscribedItems) {
   Nan::HandleScope scope;
-	uint32 numItems = SteamUGC()->GetNumSubscribedItems();
-  PublishedFileId_t* pvecPublishedFileID = new PublishedFileId_t[numItems];
-	uint32 numPopulatedItems = SteamUGC()->GetSubscribedItems(pvecPublishedFileID, numItems);
+  uint32 numItems = SteamUGC()->GetNumSubscribedItems();
+  PublishedFileId_t *pvecPublishedFileID = new PublishedFileId_t[numItems];
+  uint32 numPopulatedItems = SteamUGC()->GetSubscribedItems(pvecPublishedFileID, numItems);
 
-	v8::Local<v8::Array> items = Nan::New<v8::Array>(static_cast<int>(numPopulatedItems));
-	for (size_t i = 0; i < numPopulatedItems; ++i) {
-		Nan::Set(items, i, Nan::New(utils::uint64ToString(pvecPublishedFileID[i])).ToLocalChecked());
-	}
+  v8::Local<v8::Array> items = Nan::New<v8::Array>(static_cast<int>(numPopulatedItems));
+  for (size_t i = 0; i < numPopulatedItems; ++i) {
+    Nan::Set(items, i, Nan::New(utils::uint64ToString(pvecPublishedFileID[i])).ToLocalChecked());
+  }
 
-	delete[] pvecPublishedFileID;
+  delete[] pvecPublishedFileID;
   info.GetReturnValue().Set(items);
 }
 
@@ -403,14 +409,14 @@ NAN_METHOD(GetUGCDetails) {
     THROW_BAD_ARGS("Bad arguments");
   }
 
-	v8::Local<v8::Array> id_array = info[0].As<v8::Array>();
-	if (id_array->Length() <= 0) {
+  v8::Local<v8::Array> id_array = info[0].As<v8::Array>();
+  if (id_array->Length() <= 0) {
     THROW_BAD_ARGS("Empty request");
-	}
+  }
   if (id_array->Length() > kNumUGCResultsPerPage) {
     THROW_BAD_ARGS("Can only request details for 50 ids at a time");
   }
-	PublishedFileId_t* id_list = new PublishedFileId_t[id_array->Length()];
+  PublishedFileId_t *id_list = new PublishedFileId_t[id_array->Length()];
   for (uint32_t i = 0; i < id_array->Length(); ++i) {
     if (!Nan::Get(id_array, i).ToLocalChecked()->IsString())
       THROW_BAD_ARGS("Bad arguments");
@@ -434,8 +440,8 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
   InitUserUgcList(target);
   InitUgcItemStates(target);
 
-	SET_FUNCTION("getUGCDetails", GetUGCDetails)
-	SET_FUNCTION("getSubscribedItems", GetSubscribedItems);
+  SET_FUNCTION("getUGCDetails", GetUGCDetails)
+  SET_FUNCTION("getSubscribedItems", GetSubscribedItems);
   SET_FUNCTION("fileShare", FileShare);
   SET_FUNCTION("_publishWorkshopFile", PublishWorkshopFile);
   SET_FUNCTION("_updatePublishedWorkshopFile", UpdatePublishedWorkshopFile);

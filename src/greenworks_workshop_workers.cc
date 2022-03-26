@@ -15,21 +15,21 @@
 
 namespace {
 
-char* PreviewTypeToString(EItemPreviewType type) {
-	switch(type) {
-		case EItemPreviewType::k_EItemPreviewType_Image:
-			return "image";
-		case EItemPreviewType::k_EItemPreviewType_YouTubeVideo:
-			return "youtube";
-		case EItemPreviewType::k_EItemPreviewType_Sketchfab:
-			return "sketchfab";
-		case EItemPreviewType::k_EItemPreviewType_EnvironmentMap_HorizontalCross:
-			return "environmentmap-horizontalcross";
-		case EItemPreviewType::k_EItemPreviewType_EnvironmentMap_LatLong:
-			return "environmentmap-latlong";
-		default:
-			return "unknown";
-	}
+char *PreviewTypeToString(EItemPreviewType type) {
+  switch (type) {
+  case EItemPreviewType::k_EItemPreviewType_Image:
+    return "image";
+  case EItemPreviewType::k_EItemPreviewType_YouTubeVideo:
+    return "youtube";
+  case EItemPreviewType::k_EItemPreviewType_Sketchfab:
+    return "sketchfab";
+  case EItemPreviewType::k_EItemPreviewType_EnvironmentMap_HorizontalCross:
+    return "environmentmap-horizontalcross";
+  case EItemPreviewType::k_EItemPreviewType_EnvironmentMap_LatLong:
+    return "environmentmap-latlong";
+  default:
+    return "unknown";
+  }
 }
 
 v8::Local<v8::Object> ConvertToJsObject(const SteamUGCDetails_t &item) {
@@ -92,7 +92,6 @@ void FileShareWorker::Execute() {
   // Wait for FileShare callback result.
   WaitForCompleted();
 }
-
 void FileShareWorker::OnFileShareCompleted(RemoteStorageFileShareResult_t *result, bool io_failure) {
   if (io_failure) {
     SetErrorMessage("Error on sharing file: Steam API IO Failure");
@@ -103,7 +102,6 @@ void FileShareWorker::OnFileShareCompleted(RemoteStorageFileShareResult_t *resul
   }
   is_completed_ = true;
 }
-
 void FileShareWorker::HandleOKCallback() {
   Nan::HandleScope scope;
 
@@ -133,7 +131,6 @@ void PublishWorkshopFileWorker::Execute() {
   // Wait for FileShare callback result.
   WaitForCompleted();
 }
-
 void PublishWorkshopFileWorker::OnFilePublishCompleted(RemoteStoragePublishFileResult_t *result, bool io_failure) {
   if (io_failure) {
     SetErrorMessage("Error on publishing workshop file: Steam API IO Failure");
@@ -144,7 +141,6 @@ void PublishWorkshopFileWorker::OnFilePublishCompleted(RemoteStoragePublishFileR
   }
   is_completed_ = true;
 }
-
 void PublishWorkshopFileWorker::HandleOKCallback() {
   Nan::HandleScope scope;
 
@@ -187,7 +183,6 @@ void UpdatePublishedWorkshopFileWorker::Execute() {
   // Wait for published workshop file updated.
   WaitForCompleted();
 }
-
 void UpdatePublishedWorkshopFileWorker::OnCommitPublishedFileUpdateCompleted(RemoteStorageUpdatePublishedFileResult_t *result, bool io_failure) {
   if (io_failure) {
     SetErrorMessage("Error on committing published file update: Steam API IO Failure");
@@ -198,8 +193,7 @@ void UpdatePublishedWorkshopFileWorker::OnCommitPublishedFileUpdateCompleted(Rem
   is_completed_ = true;
 }
 
-QueryUGCWorker::QueryUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback)
-    : SteamCallbackAsyncWorker(success_callback, error_callback) {}
+QueryUGCWorker::QueryUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback) : SteamCallbackAsyncWorker(success_callback, error_callback) {}
 
 void QueryUGCWorker::HandleOKCallback() {
   Nan::HandleScope scope;
@@ -207,7 +201,7 @@ void QueryUGCWorker::HandleOKCallback() {
   v8::Local<v8::Array> items = Nan::New<v8::Array>(static_cast<int>(ugc_items_.size()));
   for (size_t i = 0; i < ugc_items_.size(); ++i) {
     v8::Local<v8::Object> item = ConvertToJsObject(ugc_items_[i]);
-		PublishedFileId_t workshop_id = ugc_items_[i].m_nPublishedFileId;
+    PublishedFileId_t workshop_id = ugc_items_[i].m_nPublishedFileId;
     // Write out child data
     int numChildren = ugc_items_[i].m_unNumChildren;
     if (numChildren > 0 && child_map_.count(workshop_id) > 0) {
@@ -220,16 +214,16 @@ void QueryUGCWorker::HandleOKCallback() {
       Nan::Set(item, Nan::New("children").ToLocalChecked(), child_items);
       delete[] child_list;
     }
-		// Get metadata
-		if (metadata_.size() > 0 && metadata_.count(workshop_id) > 0) {
-			std::string metadata = metadata_[workshop_id];
-  		Nan::Set(item, Nan::New("metadata").ToLocalChecked(), Nan::New(metadata).ToLocalChecked());
-		}
-		// Write out Key Value tags
-		if (key_value_tags_keys_.size() > 0 && key_value_tags_keys_.count(workshop_id) > 0) {
-			std::string* keys = key_value_tags_keys_[workshop_id];
-			std::string* tags = key_value_tags_values_[workshop_id];
-			int numChildren = sizeof(keys)/sizeof(std::string);
+    // Get metadata
+    if (metadata_.size() > 0 && metadata_.count(workshop_id) > 0) {
+      std::string metadata = metadata_[workshop_id];
+      Nan::Set(item, Nan::New("metadata").ToLocalChecked(), Nan::New(metadata).ToLocalChecked());
+    }
+    // Write out Key Value tags
+    if (key_value_tags_keys_.size() > 0 && key_value_tags_keys_.count(workshop_id) > 0) {
+      std::string *keys = key_value_tags_keys_[workshop_id];
+      std::string *tags = key_value_tags_values_[workshop_id];
+      int numChildren = sizeof(keys) / sizeof(std::string);
       v8::Local<v8::Array> v8_tags = Nan::New<v8::Array>(numChildren);
       v8::Local<v8::Array> v8_keys = Nan::New<v8::Array>(numChildren);
       for (size_t j = 0; j < numChildren; j++) {
@@ -237,17 +231,17 @@ void QueryUGCWorker::HandleOKCallback() {
         Nan::Set(v8_tags, j, Nan::New(tag).ToLocalChecked());
         std::string key = keys[j];
         Nan::Set(v8_keys, j, Nan::New(key).ToLocalChecked());
-			}
+      }
       Nan::Set(item, Nan::New("keyValueTagsKeys").ToLocalChecked(), v8_keys);
       Nan::Set(item, Nan::New("keyValueTagsValues").ToLocalChecked(), v8_tags);
-			delete[] tags;
-			delete[] keys;
-		}
-		// Write out tags
-		uint32 num_tags = num_tags_[workshop_id];
-		if (num_tags > 0) {
-			std::string* tags = tags_[workshop_id];
-			std::string* display_names = tags_display_names_[workshop_id];
+      delete[] tags;
+      delete[] keys;
+    }
+    // Write out tags
+    uint32 num_tags = num_tags_[workshop_id];
+    if (num_tags > 0) {
+      std::string *tags = tags_[workshop_id];
+      std::string *display_names = tags_display_names_[workshop_id];
       v8::Local<v8::Array> v8_tags = Nan::New<v8::Array>(num_tags);
       v8::Local<v8::Array> v8_tags_display_names = Nan::New<v8::Array>(num_tags);
       for (size_t j = 0; j < num_tags; j++) {
@@ -255,17 +249,17 @@ void QueryUGCWorker::HandleOKCallback() {
         Nan::Set(v8_tags, j, Nan::New(tag).ToLocalChecked());
         std::string key = display_names[j];
         Nan::Set(v8_tags_display_names, j, Nan::New(key).ToLocalChecked());
-			}
+      }
       Nan::Set(item, Nan::New("tags").ToLocalChecked(), v8_tags);
       Nan::Set(item, Nan::New("tagsDisplayNames").ToLocalChecked(), v8_tags_display_names);
-			delete[] tags;
-			delete[] display_names;
-		}
-		// Write out additional previews
-		if (additional_preview_types_.size() > 0 && additional_preview_types_.count(workshop_id) > 0) {
-			std::string* urls = additional_preview_urls_[workshop_id];
-			EItemPreviewType* types = additional_preview_types_[workshop_id];
-			int numChildren = sizeof(urls)/sizeof(std::string);
+      delete[] tags;
+      delete[] display_names;
+    }
+    // Write out additional previews
+    if (additional_preview_types_.size() > 0 && additional_preview_types_.count(workshop_id) > 0) {
+      std::string *urls = additional_preview_urls_[workshop_id];
+      EItemPreviewType *types = additional_preview_types_[workshop_id];
+      int numChildren = sizeof(urls) / sizeof(std::string);
       v8::Local<v8::Array> v8_urls = Nan::New<v8::Array>(numChildren);
       v8::Local<v8::Array> v8_types = Nan::New<v8::Array>(numChildren);
       for (size_t j = 0; j < numChildren; j++) {
@@ -273,34 +267,36 @@ void QueryUGCWorker::HandleOKCallback() {
         Nan::Set(v8_types, j, Nan::New(PreviewTypeToString(type)).ToLocalChecked());
         std::string url = urls[j];
         Nan::Set(v8_urls, j, Nan::New(url).ToLocalChecked());
-			}
+      }
       Nan::Set(item, Nan::New("additionalPreviewURLs").ToLocalChecked(), v8_urls);
       Nan::Set(item, Nan::New("additionalPreviewTypes").ToLocalChecked(), v8_types);
-			delete[] urls;
-			delete[] types;
-		}
+      delete[] urls;
+      delete[] types;
+    }
     Nan::Set(items, i, item);
   }
   child_map_.clear();
-	additional_preview_types_.clear();
-	additional_preview_urls_.clear();
-	tags_.clear();
-	num_tags_.clear();
-	tags_display_names_.clear();
-	metadata_.clear();
-	key_value_tags_keys_.clear();
-	key_value_tags_values_.clear();
+  additional_preview_types_.clear();
+  additional_preview_urls_.clear();
+  tags_.clear();
+  num_tags_.clear();
+  tags_display_names_.clear();
+  metadata_.clear();
+  key_value_tags_keys_.clear();
+  key_value_tags_values_.clear();
 
-  v8::Local<v8::Value> argv[] = {items};
+  v8::Local<v8::Value> argv[] = {items, Nan::New(total_matching_results_), Nan::New(num_results_returned_)};
   Nan::AsyncResource resource("greenworks:QueryUGCWorker.HandleOKCallback");
   callback->Call(1, argv, &resource);
 }
-
 void QueryUGCWorker::OnUGCQueryCompleted(SteamUGCQueryCompleted_t *result, bool io_failure) {
   if (io_failure) {
     SetErrorMessage("Error on querying all ugc: Steam API IO Failure");
   } else if (result->m_eResult == k_EResultOK) {
     uint32 count = result->m_unNumResultsReturned;
+    total_matching_results_ = result->m_unTotalMatchingResults;
+    num_results_returned_ = count;
+
     SteamUGCDetails_t item;
     for (uint32 i = 0; i < count; ++i) {
       SteamUGC()->GetQueryUGCResult(result->m_handle, i, &item);
@@ -308,94 +304,89 @@ void QueryUGCWorker::OnUGCQueryCompleted(SteamUGCQueryCompleted_t *result, bool 
 
       // Get required items
       if (item.m_unNumChildren > 0) {
-        PublishedFileId_t* pvecPublishedFileID = new PublishedFileId_t[item.m_unNumChildren];
+        PublishedFileId_t *pvecPublishedFileID = new PublishedFileId_t[item.m_unNumChildren];
         SteamUGC()->GetQueryUGCChildren(result->m_handle, i, pvecPublishedFileID, item.m_unNumChildren);
         child_map_[item.m_nPublishedFileId] = pvecPublishedFileID;
       }
 
-			// Get metadata
-			char* pchMetadata = new char[k_cchDeveloperMetadataMax];
-			if (SteamUGC()->GetQueryUGCMetadata(result->m_handle, i, pchMetadata, k_cchDeveloperMetadataMax)) {
-				metadata_[item.m_nPublishedFileId] = pchMetadata;
-			}
-			else {
-				delete[] pchMetadata;
-			}
+      // Get metadata
+      char *pchMetadata = new char[k_cchDeveloperMetadataMax];
+      if (SteamUGC()->GetQueryUGCMetadata(result->m_handle, i, pchMetadata, k_cchDeveloperMetadataMax)) {
+        metadata_[item.m_nPublishedFileId] = pchMetadata;
+      } else {
+        delete[] pchMetadata;
+      }
 
-			// Get Key Value tags
-			uint32 maxTagSize = 64;
-			uint32 numKeyValueTags = SteamUGC()->GetQueryUGCNumKeyValueTags(result->m_handle, i);
-			if (numKeyValueTags > 0) {
-				std::string* keys = new std::string[numKeyValueTags];
-				std::string* values = new std::string[numKeyValueTags];
-				for (uint32 j = 0; j < numKeyValueTags; j++) {
-					char* key = new char[maxTagSize];
-					char* value = new char[maxTagSize];
-					if (SteamUGC()->GetQueryUGCKeyValueTag(result->m_handle, i, j, key, maxTagSize, value, maxTagSize)) {
-						keys[j] = key;
-						values[j] = value;
-					}
-					else {
-						keys[j] = "";
-						values[j] = "";
-						delete[] key;
-						delete[] value;
-					}
-				}
-				key_value_tags_keys_[item.m_nPublishedFileId] = keys;
-				key_value_tags_values_[item.m_nPublishedFileId] = values;
-			}
+      // Get Key Value tags
+      uint32 maxTagSize = 64;
+      uint32 numKeyValueTags = SteamUGC()->GetQueryUGCNumKeyValueTags(result->m_handle, i);
+      if (numKeyValueTags > 0) {
+        std::string *keys = new std::string[numKeyValueTags];
+        std::string *values = new std::string[numKeyValueTags];
+        for (uint32 j = 0; j < numKeyValueTags; j++) {
+          char *key = new char[maxTagSize];
+          char *value = new char[maxTagSize];
+          if (SteamUGC()->GetQueryUGCKeyValueTag(result->m_handle, i, j, key, maxTagSize, value, maxTagSize)) {
+            keys[j] = key;
+            values[j] = value;
+          } else {
+            keys[j] = "";
+            values[j] = "";
+            delete[] key;
+            delete[] value;
+          }
+        }
+        key_value_tags_keys_[item.m_nPublishedFileId] = keys;
+        key_value_tags_values_[item.m_nPublishedFileId] = values;
+      }
 
-			// Get tags
-			uint32 numTags = SteamUGC()->GetQueryUGCNumTags(result->m_handle, i);
-			num_tags_[item.m_nPublishedFileId] = numTags;
-			if (numTags > 0) {
-				std::string* tags = new std::string[numTags];
-				std::string* tag_display_names = new std::string[numTags];
-				for (uint32 j = 0; j < numTags; j++) {
-					char* tag = new char[maxTagSize];
-					if (SteamUGC()->GetQueryUGCTag(result->m_handle, i, j, tag, maxTagSize)) {
-						tags[j] = tag;
-					}
-					else {
-						tags[j] = "";
-						delete[] tag;
-					}
+      // Get tags
+      uint32 numTags = SteamUGC()->GetQueryUGCNumTags(result->m_handle, i);
+      num_tags_[item.m_nPublishedFileId] = numTags;
+      if (numTags > 0) {
+        std::string *tags = new std::string[numTags];
+        std::string *tag_display_names = new std::string[numTags];
+        for (uint32 j = 0; j < numTags; j++) {
+          char *tag = new char[maxTagSize];
+          if (SteamUGC()->GetQueryUGCTag(result->m_handle, i, j, tag, maxTagSize)) {
+            tags[j] = tag;
+          } else {
+            tags[j] = "";
+            delete[] tag;
+          }
 
-					char* displayTag = new char[maxTagSize];
-					if (SteamUGC()->GetQueryUGCTagDisplayName(result->m_handle, i, j, displayTag, maxTagSize)) {
-						tag_display_names[j] = displayTag;
-					}
-					else {
-						tag_display_names[j] = "";
-						delete[] displayTag;
-					}
-				}
-				tags_[item.m_nPublishedFileId] = tags;
-				tags_display_names_[item.m_nPublishedFileId] = tag_display_names;
-			}
+          char *displayTag = new char[maxTagSize];
+          if (SteamUGC()->GetQueryUGCTagDisplayName(result->m_handle, i, j, displayTag, maxTagSize)) {
+            tag_display_names[j] = displayTag;
+          } else {
+            tag_display_names[j] = "";
+            delete[] displayTag;
+          }
+        }
+        tags_[item.m_nPublishedFileId] = tags;
+        tags_display_names_[item.m_nPublishedFileId] = tag_display_names;
+      }
 
-			// Get additional previews
-			uint32 maxPreviewURLSize = 500;
-			uint32 numPreviews = SteamUGC()->GetQueryUGCNumAdditionalPreviews(result->m_handle, i);
-			if (numPreviews > 0) {
-				std::string* previewURLs = new std::string[numPreviews];
-				EItemPreviewType* previewTypes = new EItemPreviewType[numPreviews];
-				for (uint32 j = 0; j < numPreviews; j++) {
-					char* pchURL = new char[maxPreviewURLSize];
-					EItemPreviewType* previewType;
-					if (SteamUGC()->GetQueryUGCAdditionalPreview(result->m_handle, i, j, pchURL, maxPreviewURLSize, nullptr, 0, previewType)) {
-						previewURLs[j] = pchURL;
-						previewTypes[j] = *previewType;
-					}
-					else {
-						delete[] pchURL;
-						delete previewType;
-						previewURLs[j] = "";
-						previewTypes[j] = EItemPreviewType::k_EItemPreviewType_Image;
-					}
-				}
-			}
+      // Get additional previews
+      uint32 maxPreviewURLSize = 500;
+      uint32 numPreviews = SteamUGC()->GetQueryUGCNumAdditionalPreviews(result->m_handle, i);
+      if (numPreviews > 0) {
+        std::string *previewURLs = new std::string[numPreviews];
+        EItemPreviewType *previewTypes = new EItemPreviewType[numPreviews];
+        for (uint32 j = 0; j < numPreviews; j++) {
+          char *pchURL = new char[maxPreviewURLSize];
+          EItemPreviewType *previewType;
+          if (SteamUGC()->GetQueryUGCAdditionalPreview(result->m_handle, i, j, pchURL, maxPreviewURLSize, nullptr, 0, previewType)) {
+            previewURLs[j] = pchURL;
+            previewTypes[j] = *previewType;
+          } else {
+            delete[] pchURL;
+            delete previewType;
+            previewURLs[j] = "";
+            previewTypes[j] = EItemPreviewType::k_EItemPreviewType_Image;
+          }
+        }
+      }
     }
     SteamUGC()->ReleaseQueryUGCRequest(result->m_handle);
   } else {
@@ -403,7 +394,6 @@ void QueryUGCWorker::OnUGCQueryCompleted(SteamUGCQueryCompleted_t *result, bool 
   }
   is_completed_ = true;
 }
-
 void QueryUGCWorker::HandleErrorCallback() {
   if (child_map_.size() > 0) {
     for (std::map<PublishedFileId_t, PublishedFileId_t *>::iterator it = child_map_.begin(); it != child_map_.end(); it++) {
@@ -412,44 +402,44 @@ void QueryUGCWorker::HandleErrorCallback() {
     }
     child_map_.clear();
   }
-	if (key_value_tags_keys_.size() > 0) {
+  if (key_value_tags_keys_.size() > 0) {
     for (std::map<PublishedFileId_t, std::string *>::iterator it = key_value_tags_keys_.begin(); it != key_value_tags_keys_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		key_value_tags_keys_.clear();
+    key_value_tags_keys_.clear();
     for (std::map<PublishedFileId_t, std::string *>::iterator it = key_value_tags_values_.begin(); it != key_value_tags_values_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		key_value_tags_values_.clear();
-	}
-	if (tags_.size() > 0) {
+    key_value_tags_values_.clear();
+  }
+  if (tags_.size() > 0) {
     for (std::map<PublishedFileId_t, std::string *>::iterator it = tags_.begin(); it != tags_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		tags_.clear();
+    tags_.clear();
     for (std::map<PublishedFileId_t, std::string *>::iterator it = tags_display_names_.begin(); it != tags_display_names_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		tags_display_names_.clear();
-	}
-	if (additional_preview_types_.size() > 0) {
+    tags_display_names_.clear();
+  }
+  if (additional_preview_types_.size() > 0) {
     for (std::map<PublishedFileId_t, EItemPreviewType *>::iterator it = additional_preview_types_.begin(); it != additional_preview_types_.end(); it++) {
-      EItemPreviewType* type_array = it->second;
+      EItemPreviewType *type_array = it->second;
       delete[] type_array;
     }
-		additional_preview_types_.clear();
+    additional_preview_types_.clear();
     for (std::map<PublishedFileId_t, std::string *>::iterator it = additional_preview_urls_.begin(); it != additional_preview_urls_.end(); it++) {
-      std::string* url_array = it->second;
+      std::string *url_array = it->second;
       delete[] url_array;
     }
-		additional_preview_urls_.clear();
-	}
-	num_tags_.clear();
-	metadata_.clear();
+    additional_preview_urls_.clear();
+  }
+  num_tags_.clear();
+  metadata_.clear();
 
   if (!error_callback_)
     return;
@@ -459,8 +449,8 @@ void QueryUGCWorker::HandleErrorCallback() {
   error_callback_->Call(1, argv, &resource);
 }
 
-QueryUGCDetailsWorker::QueryUGCDetailsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t* id_list, uint32 num_ids)
-		: QueryUGCWorker(success_callback, error_callback), item_ids_(id_list), num_ids_(num_ids) {}
+QueryUGCDetailsWorker::QueryUGCDetailsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t *id_list, uint32 num_ids)
+    : QueryUGCWorker(success_callback, error_callback), item_ids_(id_list), num_ids_(num_ids) {}
 void QueryUGCDetailsWorker::Execute() {
   UGCQueryHandle_t ugc_handle = SteamUGC()->CreateQueryUGCDetailsRequest(item_ids_, num_ids_);
   SteamUGC()->SetReturnLongDescription(ugc_handle, true);
@@ -475,20 +465,22 @@ void QueryUGCDetailsWorker::Execute() {
   WaitForCompleted();
 }
 void QueryUGCDetailsWorker::HandleOKCallback() {
-	delete[] item_ids_;
+  delete[] item_ids_;
   QueryUGCWorker::HandleOKCallback();
 }
 void QueryUGCDetailsWorker::HandleErrorCallback() {
-	delete[] item_ids_;
+  delete[] item_ids_;
   QueryUGCWorker::HandleErrorCallback();
 }
 
-QueryUnknownUGCWorker::QueryUnknownUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type, uint32 app_id, uint32 page_num)
-		: QueryUGCWorker(success_callback, error_callback), ugc_matching_type_(ugc_matching_type), app_id_(app_id), page_num_(page_num) {}
+QueryUnknownUGCWorker::QueryUnknownUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type,
+                                             uint32 app_id, uint32 page_num)
+    : QueryUGCWorker(success_callback, error_callback), ugc_matching_type_(ugc_matching_type), app_id_(app_id), page_num_(page_num) {}
 
 QueryAllUGCWorker::QueryAllUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type,
-                                     EUGCQuery ugc_query_type, uint32 app_id, uint32 page_num)
-    : QueryUnknownUGCWorker(success_callback, error_callback, ugc_matching_type, app_id, page_num), ugc_query_type_(ugc_query_type) {}
+                                     EUGCQuery ugc_query_type, uint32 app_id, uint32 page_num, std::string required_tag)
+    : QueryUnknownUGCWorker(success_callback, error_callback, ugc_matching_type, app_id, page_num), ugc_query_type_(ugc_query_type),
+      required_tag_(required_tag) {}
 
 void QueryAllUGCWorker::Execute() {
   uint32 invalid_app_id = 0;
@@ -501,6 +493,10 @@ void QueryAllUGCWorker::Execute() {
   SteamUGC()->SetReturnAdditionalPreviews(ugc_handle, true);
   SteamUGC()->SetReturnKeyValueTags(ugc_handle, true);
   SteamUGC()->SetReturnMetadata(ugc_handle, true);
+  if (required_tag_.length() > 0) {
+    const char *tag = required_tag_.c_str();
+    SteamUGC()->AddRequiredTag(ugc_handle, tag);
+  }
   SteamAPICall_t ugc_query_result = SteamUGC()->SendQueryUGCRequest(ugc_handle);
   ugc_query_call_result_.Set(ugc_query_result, this, &QueryAllUGCWorker::OnUGCQueryCompleted);
 
@@ -509,9 +505,10 @@ void QueryAllUGCWorker::Execute() {
 }
 
 QueryUserUGCWorker::QueryUserUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type,
-                                       EUserUGCList ugc_list, EUserUGCListSortOrder ugc_list_sort_order, uint32 app_id, uint32 page_num)
-    : QueryUnknownUGCWorker(success_callback, error_callback, ugc_matching_type, app_id, page_num), ugc_list_(ugc_list), ugc_list_sort_order_(ugc_list_sort_order) {}
-
+                                       EUserUGCList ugc_list, EUserUGCListSortOrder ugc_list_sort_order, uint32 app_id, uint32 page_num,
+                                       std::string required_tag)
+    : QueryUnknownUGCWorker(success_callback, error_callback, ugc_matching_type, app_id, page_num), ugc_list_(ugc_list),
+      ugc_list_sort_order_(ugc_list_sort_order), required_tag_(required_tag) {}
 void QueryUserUGCWorker::Execute() {
   UGCQueryHandle_t ugc_handle = SteamUGC()->CreateQueryUserUGCRequest(SteamUser()->GetSteamID().GetAccountID(), ugc_list_, ugc_matching_type_,
                                                                       ugc_list_sort_order_, app_id_, app_id_, page_num_);
@@ -520,6 +517,10 @@ void QueryUserUGCWorker::Execute() {
   SteamUGC()->SetReturnAdditionalPreviews(ugc_handle, true);
   SteamUGC()->SetReturnKeyValueTags(ugc_handle, true);
   SteamUGC()->SetReturnMetadata(ugc_handle, true);
+  if (required_tag_.length() > 0) {
+    const char *tag = required_tag_.c_str();
+    SteamUGC()->AddRequiredTag(ugc_handle, tag);
+  }
   SteamAPICall_t ugc_query_result = SteamUGC()->SendQueryUGCRequest(ugc_handle);
   ugc_query_call_result_.Set(ugc_query_result, this, &QueryUserUGCWorker::OnUGCQueryCompleted);
 
@@ -528,23 +529,24 @@ void QueryUserUGCWorker::Execute() {
 }
 
 DownloadItemWorker::DownloadItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t published_file_id)
-    : SteamCallbackAsyncWorker(success_callback, error_callback), published_file_id_(published_file_id), m_CallbackDownloadCompleted( this, &DownloadItemWorker::OnDownloadCompleted ) {}
+    : SteamCallbackAsyncWorker(success_callback, error_callback), published_file_id_(published_file_id),
+      m_CallbackDownloadCompleted(this, &DownloadItemWorker::OnDownloadCompleted) {}
 void DownloadItemWorker::Execute() {
   if (SteamUGC()->DownloadItem(published_file_id_, false)) {
-  	// call_result_.Set(nullptr, this, &DownloadItemWorker::OnDownloadCompleted);
-		// currently nonfunctional - don't know how to setup this callback properly
-	} else {
-		is_completed_ = true;
-	}
+    // call_result_.Set(nullptr, this, &DownloadItemWorker::OnDownloadCompleted);
+    // currently nonfunctional - don't know how to setup this callback properly
+  } else {
+    is_completed_ = true;
+  }
 
   // Wait for downloading file completed.
   WaitForCompleted();
 }
 void DownloadItemWorker::OnDownloadCompleted(DownloadItemResult_t *result) {
-	if (result->m_unAppID == SteamUtils()->GetAppID() && result->m_nPublishedFileId == published_file_id_) {
-		result_ = result->m_eResult;
-		is_completed_ = true;
-	}
+  if (result->m_unAppID == SteamUtils()->GetAppID() && result->m_nPublishedFileId == published_file_id_) {
+    result_ = result->m_eResult;
+    is_completed_ = true;
+  }
 }
 void DownloadItemWorker::HandleOKCallback() {
   Nan::HandleScope scope;
@@ -595,89 +597,84 @@ void SynchronizeItemsWorker::OnUGCQueryCompleted(SteamUGCQueryCompleted_t *resul
         SteamUGC()->GetQueryUGCChildren(result->m_handle, i, pvecPublishedFileID, item.m_unNumChildren);
         child_map_[item.m_nPublishedFileId] = pvecPublishedFileID;
       }
-			// Get metadata
-			char* pchMetadata = new char[k_cchDeveloperMetadataMax];
-			if (SteamUGC()->GetQueryUGCMetadata(result->m_handle, i, pchMetadata, k_cchDeveloperMetadataMax)) {
-				metadata_[item.m_nPublishedFileId] = pchMetadata;
-			}
-			else {
-				delete[] pchMetadata;
-			}
+      // Get metadata
+      char *pchMetadata = new char[k_cchDeveloperMetadataMax];
+      if (SteamUGC()->GetQueryUGCMetadata(result->m_handle, i, pchMetadata, k_cchDeveloperMetadataMax)) {
+        metadata_[item.m_nPublishedFileId] = pchMetadata;
+      } else {
+        delete[] pchMetadata;
+      }
 
-			// Get Key Value tags
-			uint32 maxTagSize = 64;
-			uint32 numKeyValueTags = SteamUGC()->GetQueryUGCNumKeyValueTags(result->m_handle, i);
-			if (numKeyValueTags > 0) {
-				std::string* keys = new std::string[numKeyValueTags];
-				std::string* values = new std::string[numKeyValueTags];
-				for (uint32 j = 0; j < numKeyValueTags; j++) {
-					char* key = new char[maxTagSize];
-					char* value = new char[maxTagSize];
-					if (SteamUGC()->GetQueryUGCKeyValueTag(result->m_handle, i, j, key, maxTagSize, value, maxTagSize)) {
-						keys[j] = key;
-						values[j] = value;
-					}
-					else {
-						keys[j] = "";
-						values[j] = "";
-						delete[] key;
-						delete[] value;
-					}
-				}
-				key_value_tags_keys_[item.m_nPublishedFileId] = keys;
-				key_value_tags_values_[item.m_nPublishedFileId] = values;
-			}
+      // Get Key Value tags
+      uint32 maxTagSize = 64;
+      uint32 numKeyValueTags = SteamUGC()->GetQueryUGCNumKeyValueTags(result->m_handle, i);
+      if (numKeyValueTags > 0) {
+        std::string *keys = new std::string[numKeyValueTags];
+        std::string *values = new std::string[numKeyValueTags];
+        for (uint32 j = 0; j < numKeyValueTags; j++) {
+          char *key = new char[maxTagSize];
+          char *value = new char[maxTagSize];
+          if (SteamUGC()->GetQueryUGCKeyValueTag(result->m_handle, i, j, key, maxTagSize, value, maxTagSize)) {
+            keys[j] = key;
+            values[j] = value;
+          } else {
+            keys[j] = "";
+            values[j] = "";
+            delete[] key;
+            delete[] value;
+          }
+        }
+        key_value_tags_keys_[item.m_nPublishedFileId] = keys;
+        key_value_tags_values_[item.m_nPublishedFileId] = values;
+      }
 
-			// Get tags
-			uint32 numTags = SteamUGC()->GetQueryUGCNumTags(result->m_handle, i);
-			if (numTags > 0) {
-				std::string* tags = new std::string[numTags];
-				std::string* tag_display_names = new std::string[numTags];
-				for (uint32 j = 0; j < numTags; j++) {
-					char* tag = new char[maxTagSize];
-					if (SteamUGC()->GetQueryUGCTag(result->m_handle, i, j, tag, maxTagSize)) {
-						tags[j] = tag;
-					}
-					else {
-						tags[j] = "";
-						delete[] tag;
-					}
+      // Get tags
+      uint32 numTags = SteamUGC()->GetQueryUGCNumTags(result->m_handle, i);
+      if (numTags > 0) {
+        std::string *tags = new std::string[numTags];
+        std::string *tag_display_names = new std::string[numTags];
+        for (uint32 j = 0; j < numTags; j++) {
+          char *tag = new char[maxTagSize];
+          if (SteamUGC()->GetQueryUGCTag(result->m_handle, i, j, tag, maxTagSize)) {
+            tags[j] = tag;
+          } else {
+            tags[j] = "";
+            delete[] tag;
+          }
 
-					char* displayTag = new char[maxTagSize];
-					if (SteamUGC()->GetQueryUGCTagDisplayName(result->m_handle, i, j, displayTag, maxTagSize)) {
-						tag_display_names[j] = displayTag;
-					}
-					else {
-						tag_display_names[j] = "";
-						delete[] displayTag;
-					}
-				}
-				tags_[item.m_nPublishedFileId] = tags;
-				tags_display_names_[item.m_nPublishedFileId] = tag_display_names;
-			}
-			num_tags_[item.m_nPublishedFileId] = numTags;
+          char *displayTag = new char[maxTagSize];
+          if (SteamUGC()->GetQueryUGCTagDisplayName(result->m_handle, i, j, displayTag, maxTagSize)) {
+            tag_display_names[j] = displayTag;
+          } else {
+            tag_display_names[j] = "";
+            delete[] displayTag;
+          }
+        }
+        tags_[item.m_nPublishedFileId] = tags;
+        tags_display_names_[item.m_nPublishedFileId] = tag_display_names;
+      }
+      num_tags_[item.m_nPublishedFileId] = numTags;
 
-			// Get additional previews
-			uint32 maxPreviewURLSize = 500;
-			uint32 numPreviews = SteamUGC()->GetQueryUGCNumAdditionalPreviews(result->m_handle, i);
-			if (numPreviews > 0) {
-				std::string* previewURLs = new std::string[numPreviews];
-				EItemPreviewType* previewTypes = new EItemPreviewType[numPreviews];
-				for (uint32 j = 0; j < numPreviews; j++) {
-					char* pchURL = new char[maxPreviewURLSize];
-					EItemPreviewType* previewType;
-					if (SteamUGC()->GetQueryUGCAdditionalPreview(result->m_handle, i, j, pchURL, maxPreviewURLSize, nullptr, 0, previewType)) {
-						previewURLs[j] = pchURL;
-						previewTypes[j] = *previewType;
-					}
-					else {
-						delete[] pchURL;
-						delete previewType;
-						previewURLs[j] = "";
-						previewTypes[j] = EItemPreviewType::k_EItemPreviewType_Image;
-					}
-				}
-			}
+      // Get additional previews
+      uint32 maxPreviewURLSize = 500;
+      uint32 numPreviews = SteamUGC()->GetQueryUGCNumAdditionalPreviews(result->m_handle, i);
+      if (numPreviews > 0) {
+        std::string *previewURLs = new std::string[numPreviews];
+        EItemPreviewType *previewTypes = new EItemPreviewType[numPreviews];
+        for (uint32 j = 0; j < numPreviews; j++) {
+          char *pchURL = new char[maxPreviewURLSize];
+          EItemPreviewType *previewType;
+          if (SteamUGC()->GetQueryUGCAdditionalPreview(result->m_handle, i, j, pchURL, maxPreviewURLSize, nullptr, 0, previewType)) {
+            previewURLs[j] = pchURL;
+            previewTypes[j] = *previewType;
+          } else {
+            delete[] pchURL;
+            delete previewType;
+            previewURLs[j] = "";
+            previewTypes[j] = EItemPreviewType::k_EItemPreviewType_Image;
+          }
+        }
+      }
     }
 
     // Start download the file.
@@ -738,44 +735,44 @@ void SynchronizeItemsWorker::HandleErrorCallback() {
     }
     child_map_.clear();
   }
-	if (key_value_tags_keys_.size() > 0) {
+  if (key_value_tags_keys_.size() > 0) {
     for (std::map<PublishedFileId_t, std::string *>::iterator it = key_value_tags_keys_.begin(); it != key_value_tags_keys_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		key_value_tags_keys_.clear();
+    key_value_tags_keys_.clear();
     for (std::map<PublishedFileId_t, std::string *>::iterator it = key_value_tags_values_.begin(); it != key_value_tags_values_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		key_value_tags_values_.clear();
-	}
-	if (tags_.size() > 0) {
+    key_value_tags_values_.clear();
+  }
+  if (tags_.size() > 0) {
     for (std::map<PublishedFileId_t, std::string *>::iterator it = tags_.begin(); it != tags_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		tags_.clear();
+    tags_.clear();
     for (std::map<PublishedFileId_t, std::string *>::iterator it = tags_display_names_.begin(); it != tags_display_names_.end(); it++) {
-      std::string* tags_array = it->second;
+      std::string *tags_array = it->second;
       delete[] tags_array;
     }
-		tags_display_names_.clear();
-	}
-	if (additional_preview_types_.size() > 0) {
+    tags_display_names_.clear();
+  }
+  if (additional_preview_types_.size() > 0) {
     for (std::map<PublishedFileId_t, EItemPreviewType *>::iterator it = additional_preview_types_.begin(); it != additional_preview_types_.end(); it++) {
-      EItemPreviewType* type_array = it->second;
+      EItemPreviewType *type_array = it->second;
       delete[] type_array;
     }
-		additional_preview_types_.clear();
+    additional_preview_types_.clear();
     for (std::map<PublishedFileId_t, std::string *>::iterator it = additional_preview_urls_.begin(); it != additional_preview_urls_.end(); it++) {
-      std::string* url_array = it->second;
+      std::string *url_array = it->second;
       delete[] url_array;
     }
-		additional_preview_urls_.clear();
-	}
-	num_tags_.clear();
-	metadata_.clear();
+    additional_preview_urls_.clear();
+  }
+  num_tags_.clear();
+  metadata_.clear();
 
   if (!error_callback_)
     return;
@@ -791,7 +788,7 @@ void SynchronizeItemsWorker::HandleOKCallback() {
   v8::Local<v8::Array> items = Nan::New<v8::Array>(static_cast<int>(ugc_items_.size()));
   for (size_t i = 0; i < ugc_items_.size(); ++i) {
     v8::Local<v8::Object> item = ConvertToJsObject(ugc_items_[i]);
-		PublishedFileId_t workshop_id = ugc_items_[i].m_nPublishedFileId;
+    PublishedFileId_t workshop_id = ugc_items_[i].m_nPublishedFileId;
     // Write out child data
     int numChildren = ugc_items_[i].m_unNumChildren;
     if (numChildren > 0 && child_map_.count(workshop_id) > 0) {
@@ -804,16 +801,16 @@ void SynchronizeItemsWorker::HandleOKCallback() {
       Nan::Set(item, Nan::New("children").ToLocalChecked(), child_items);
       delete[] child_list;
     }
-		// Get metadata
-		if (metadata_.size() > 0 && metadata_.count(workshop_id) > 0) {
-			std::string metadata = metadata_[workshop_id];
-  		Nan::Set(item, Nan::New("metadata").ToLocalChecked(), Nan::New(metadata).ToLocalChecked());
-		}
-		// Write out Key Value tags
-		if (key_value_tags_keys_.size() > 0 && key_value_tags_keys_.count(workshop_id) > 0) {
-			std::string* keys = key_value_tags_keys_[workshop_id];
-			std::string* tags = key_value_tags_values_[workshop_id];
-			int numChildren = sizeof(keys)/sizeof(std::string);
+    // Get metadata
+    if (metadata_.size() > 0 && metadata_.count(workshop_id) > 0) {
+      std::string metadata = metadata_[workshop_id];
+      Nan::Set(item, Nan::New("metadata").ToLocalChecked(), Nan::New(metadata).ToLocalChecked());
+    }
+    // Write out Key Value tags
+    if (key_value_tags_keys_.size() > 0 && key_value_tags_keys_.count(workshop_id) > 0) {
+      std::string *keys = key_value_tags_keys_[workshop_id];
+      std::string *tags = key_value_tags_values_[workshop_id];
+      int numChildren = sizeof(keys) / sizeof(std::string);
       v8::Local<v8::Array> v8_tags = Nan::New<v8::Array>(numChildren);
       v8::Local<v8::Array> v8_keys = Nan::New<v8::Array>(numChildren);
       for (size_t j = 0; j < numChildren; j++) {
@@ -821,17 +818,17 @@ void SynchronizeItemsWorker::HandleOKCallback() {
         Nan::Set(v8_tags, j, Nan::New(tag).ToLocalChecked());
         std::string key = keys[j];
         Nan::Set(v8_keys, j, Nan::New(key).ToLocalChecked());
-			}
+      }
       Nan::Set(item, Nan::New("keyValueTagsKeys").ToLocalChecked(), v8_keys);
       Nan::Set(item, Nan::New("keyValueTagsValues").ToLocalChecked(), v8_tags);
-			delete[] tags;
-			delete[] keys;
-		}
-		// Write out tags
-		uint32 num_tags = num_tags_[workshop_id];
-		if (num_tags > 0) {
-			std::string* tags = tags_[workshop_id];
-			std::string* display_names = tags_display_names_[workshop_id];
+      delete[] tags;
+      delete[] keys;
+    }
+    // Write out tags
+    uint32 num_tags = num_tags_[workshop_id];
+    if (num_tags > 0) {
+      std::string *tags = tags_[workshop_id];
+      std::string *display_names = tags_display_names_[workshop_id];
       v8::Local<v8::Array> v8_tags = Nan::New<v8::Array>(num_tags);
       v8::Local<v8::Array> v8_tags_display_names = Nan::New<v8::Array>(num_tags);
       for (size_t j = 0; j < num_tags; j++) {
@@ -839,17 +836,17 @@ void SynchronizeItemsWorker::HandleOKCallback() {
         Nan::Set(v8_tags, j, Nan::New(tag).ToLocalChecked());
         std::string key = display_names[j];
         Nan::Set(v8_tags_display_names, j, Nan::New(key).ToLocalChecked());
-			}
+      }
       Nan::Set(item, Nan::New("tags").ToLocalChecked(), v8_tags);
       Nan::Set(item, Nan::New("tagsDisplayNames").ToLocalChecked(), v8_tags_display_names);
-			delete[] tags;
-			delete[] display_names;
-		}
-		// Write out additional previews
-		if (additional_preview_types_.size() > 0 && additional_preview_types_.count(workshop_id) > 0) {
-			std::string* urls = additional_preview_urls_[workshop_id];
-			EItemPreviewType* types = additional_preview_types_[workshop_id];
-			int numChildren = sizeof(urls)/sizeof(std::string);
+      delete[] tags;
+      delete[] display_names;
+    }
+    // Write out additional previews
+    if (additional_preview_types_.size() > 0 && additional_preview_types_.count(workshop_id) > 0) {
+      std::string *urls = additional_preview_urls_[workshop_id];
+      EItemPreviewType *types = additional_preview_types_[workshop_id];
+      int numChildren = sizeof(urls) / sizeof(std::string);
       v8::Local<v8::Array> v8_urls = Nan::New<v8::Array>(numChildren);
       v8::Local<v8::Array> v8_types = Nan::New<v8::Array>(numChildren);
       for (size_t j = 0; j < numChildren; j++) {
@@ -857,26 +854,26 @@ void SynchronizeItemsWorker::HandleOKCallback() {
         Nan::Set(v8_types, j, Nan::New(PreviewTypeToString(type)).ToLocalChecked());
         std::string url = urls[j];
         Nan::Set(v8_urls, j, Nan::New(url).ToLocalChecked());
-			}
+      }
       Nan::Set(item, Nan::New("additionalPreviewURLs").ToLocalChecked(), v8_urls);
       Nan::Set(item, Nan::New("additionalPreviewTypes").ToLocalChecked(), v8_types);
-			delete[] urls;
-			delete[] types;
-		}
+      delete[] urls;
+      delete[] types;
+    }
     bool is_updated =
         std::find(download_ugc_items_handle_.begin(), download_ugc_items_handle_.end(), ugc_items_[i].m_hFile) != download_ugc_items_handle_.end();
     Nan::Set(item, Nan::New("isUpdated").ToLocalChecked(), Nan::New(is_updated));
     Nan::Set(items, i, item);
   }
   child_map_.clear();
-	additional_preview_types_.clear();
-	additional_preview_urls_.clear();
-	tags_.clear();
-	num_tags_.clear();
-	tags_display_names_.clear();
-	metadata_.clear();
-	key_value_tags_keys_.clear();
-	key_value_tags_values_.clear();
+  additional_preview_types_.clear();
+  additional_preview_urls_.clear();
+  tags_.clear();
+  num_tags_.clear();
+  tags_display_names_.clear();
+  metadata_.clear();
+  key_value_tags_keys_.clear();
+  key_value_tags_values_.clear();
 
   v8::Local<v8::Value> argv[] = {items};
   Nan::AsyncResource resource("greenworks:SynchronizeItemsWorker.HandleOKCallback");
@@ -896,8 +893,8 @@ void UnsubscribePublishedFileWorker::OnUnsubscribeCompleted(RemoteStorageUnsubsc
   if (io_failure) {
     SetErrorMessage("Error on downloading file: Steam API IO Failure");
   }
-	result_ = result->m_eResult;
-	is_completed_ = true;
+  result_ = result->m_eResult;
+  is_completed_ = true;
 }
 void UnsubscribePublishedFileWorker::HandleOKCallback() {
   Nan::HandleScope scope;
@@ -906,8 +903,7 @@ void UnsubscribePublishedFileWorker::HandleOKCallback() {
   callback->Call(1, argv, &resource);
 }
 
-SubscribePublishedFileWorker::SubscribePublishedFileWorker(Nan::Callback *success_callback, Nan::Callback *error_callback,
-                                                               PublishedFileId_t Subscribe_file_id)
+SubscribePublishedFileWorker::SubscribePublishedFileWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t Subscribe_file_id)
     : SteamCallbackAsyncWorker(success_callback, error_callback), subscribe_file_id_(Subscribe_file_id) {}
 void SubscribePublishedFileWorker::Execute() {
   SteamAPICall_t result = SteamUGC()->SubscribeItem(subscribe_file_id_);
@@ -919,8 +915,8 @@ void SubscribePublishedFileWorker::OnSubscribeCompleted(RemoteStorageSubscribePu
   if (io_failure) {
     SetErrorMessage("Error on downloading file: Steam API IO Failure");
   }
-	result_ = result->m_eResult;
-	is_completed_ = true;
+  result_ = result->m_eResult;
+  is_completed_ = true;
 }
 void SubscribePublishedFileWorker::HandleOKCallback() {
   Nan::HandleScope scope;
@@ -928,6 +924,6 @@ void SubscribePublishedFileWorker::HandleOKCallback() {
   Nan::AsyncResource resource("greenworks:SubscribePublishedFileWorker.HandleOKCallback");
   callback->Call(1, argv, &resource);
 }
-}
+} // namespace greenworks
 
 // namespace greenworks

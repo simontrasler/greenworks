@@ -7,8 +7,8 @@
 
 #include "steam_async_worker.h"
 
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "steam/steam_api.h"
 
@@ -81,36 +81,38 @@ public:
 
 protected:
   std::vector<SteamUGCDetails_t> ugc_items_;
-  std::map<PublishedFileId_t, PublishedFileId_t*> child_map_;
-	std::map<PublishedFileId_t, std::string*> key_value_tags_keys_;
-	std::map<PublishedFileId_t, std::string*> key_value_tags_values_;
-	std::map<PublishedFileId_t, uint32> num_tags_;
-	std::map<PublishedFileId_t, std::string*> tags_;
-	std::map<PublishedFileId_t, std::string*> tags_display_names_;
-	std::map<PublishedFileId_t, std::string*> additional_preview_urls_;
-	std::map<PublishedFileId_t, EItemPreviewType*> additional_preview_types_;
-	std::map<PublishedFileId_t, std::string> metadata_;
+  std::map<PublishedFileId_t, PublishedFileId_t *> child_map_;
+  std::map<PublishedFileId_t, std::string *> key_value_tags_keys_;
+  std::map<PublishedFileId_t, std::string *> key_value_tags_values_;
+  std::map<PublishedFileId_t, uint32> num_tags_;
+  std::map<PublishedFileId_t, std::string *> tags_;
+  std::map<PublishedFileId_t, std::string *> tags_display_names_;
+  std::map<PublishedFileId_t, std::string *> additional_preview_urls_;
+  std::map<PublishedFileId_t, EItemPreviewType *> additional_preview_types_;
+  std::map<PublishedFileId_t, std::string> metadata_;
+  uint32 total_matching_results_;
+  uint32 num_results_returned_;
   CCallResult<QueryUGCWorker, SteamUGCQueryCompleted_t> ugc_query_call_result_;
 };
-
 
 // A base worker class for querying ugc details.
 class QueryUGCDetailsWorker : public QueryUGCWorker {
 public:
-  QueryUGCDetailsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t* id_list, uint32 num_ids);
+  QueryUGCDetailsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t *id_list, uint32 num_ids);
   void Execute() override;
 
   void HandleOKCallback() override;
   void HandleErrorCallback() override;
 
 protected:
-	PublishedFileId_t* item_ids_;
-	uint32 num_ids_;
+  PublishedFileId_t *item_ids_;
+  uint32 num_ids_;
 };
 
 class QueryUnknownUGCWorker : public QueryUGCWorker {
 public:
   QueryUnknownUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type, uint32 app_id, uint32 page_num);
+
 protected:
   EUGCMatchingUGCType ugc_matching_type_;
   uint32 app_id_;
@@ -120,21 +122,23 @@ protected:
 class QueryAllUGCWorker : public QueryUnknownUGCWorker {
 public:
   QueryAllUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type, EUGCQuery ugc_query_type,
-                    uint32 app_id, uint32 page_num);
+                    uint32 app_id, uint32 page_num, std::string required_tag);
   void Execute() override;
 
 private:
   EUGCQuery ugc_query_type_;
+  std::string required_tag_;
 };
 
 class QueryUserUGCWorker : public QueryUnknownUGCWorker {
 public:
   QueryUserUGCWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, EUGCMatchingUGCType ugc_matching_type, EUserUGCList ugc_list,
-                     EUserUGCListSortOrder ugc_list_sort_order, uint32 app_id, uint32 page_num);
+                     EUserUGCListSortOrder ugc_list_sort_order, uint32 app_id, uint32 page_num, std::string required_tag);
   void Execute() override;
 
 private:
   EUserUGCList ugc_list_;
+  std::string required_tag_;
   EUserUGCListSortOrder ugc_list_sort_order_;
 };
 
@@ -145,9 +149,9 @@ public:
   void Execute() override;
 
 private:
-	PublishedFileId_t published_file_id_;
-	EResult result_;
-	STEAM_CALLBACK( DownloadItemWorker, OnDownloadCompleted, DownloadItemResult_t, m_CallbackDownloadCompleted );
+  PublishedFileId_t published_file_id_;
+  EResult result_;
+  STEAM_CALLBACK(DownloadItemWorker, OnDownloadCompleted, DownloadItemResult_t, m_CallbackDownloadCompleted);
 };
 
 class SynchronizeItemsWorker : public SteamCallbackAsyncWorker {
@@ -168,15 +172,15 @@ private:
   std::vector<UGCHandle_t> download_ugc_items_handle_;
   uint32 app_id_;
   uint32 page_num_;
-  std::map<PublishedFileId_t, PublishedFileId_t*> child_map_;
-	std::map<PublishedFileId_t, std::string*> key_value_tags_keys_;
-	std::map<PublishedFileId_t, std::string*> key_value_tags_values_;
-	std::map<PublishedFileId_t, uint32> num_tags_;
-	std::map<PublishedFileId_t, std::string*> tags_;
-	std::map<PublishedFileId_t, std::string*> tags_display_names_;
-	std::map<PublishedFileId_t, std::string*> additional_preview_urls_;
-	std::map<PublishedFileId_t, EItemPreviewType*> additional_preview_types_;
-	std::map<PublishedFileId_t, std::string> metadata_;
+  std::map<PublishedFileId_t, PublishedFileId_t *> child_map_;
+  std::map<PublishedFileId_t, std::string *> key_value_tags_keys_;
+  std::map<PublishedFileId_t, std::string *> key_value_tags_values_;
+  std::map<PublishedFileId_t, uint32> num_tags_;
+  std::map<PublishedFileId_t, std::string *> tags_;
+  std::map<PublishedFileId_t, std::string *> tags_display_names_;
+  std::map<PublishedFileId_t, std::string *> additional_preview_urls_;
+  std::map<PublishedFileId_t, EItemPreviewType *> additional_preview_types_;
+  std::map<PublishedFileId_t, std::string> metadata_;
   CCallResult<SynchronizeItemsWorker, RemoteStorageDownloadUGCResult_t> download_call_result_;
   CCallResult<SynchronizeItemsWorker, SteamUGCQueryCompleted_t> ugc_query_call_result_;
 };
@@ -190,7 +194,7 @@ public:
 
 private:
   PublishedFileId_t unsubscribe_file_id_;
-	EResult result_;
+  EResult result_;
   CCallResult<UnsubscribePublishedFileWorker, RemoteStorageUnsubscribePublishedFileResult_t> call_result_;
 };
 
@@ -203,7 +207,7 @@ public:
 
 private:
   PublishedFileId_t subscribe_file_id_;
-	EResult result_;
+  EResult result_;
   CCallResult<SubscribePublishedFileWorker, RemoteStorageSubscribePublishedFileResult_t> call_result_;
 };
 } // namespace greenworks
