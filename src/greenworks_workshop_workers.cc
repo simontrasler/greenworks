@@ -285,7 +285,12 @@ void QueryUGCWorker::HandleOKCallback() {
   key_value_tags_keys_.clear();
   key_value_tags_values_.clear();
 
-  v8::Local<v8::Value> argv[] = {items, Nan::New(total_matching_results_), Nan::New(num_results_returned_)};
+  v8::Local<v8::Object> result = Nan::New<v8::Object>();
+	Nan::Set(result, Nan::New("items").ToLocalChecked(), items);
+	Nan::Set(result, Nan::New("totalItems").ToLocalChecked(), Nan::New(total_matching_results_));
+	Nan::Set(result, Nan::New("numReturned").ToLocalChecked(), Nan::New(num_results_returned_));
+
+  v8::Local<v8::Value> argv[] = {result};
   Nan::AsyncResource resource("greenworks:QueryUGCWorker.HandleOKCallback");
   callback->Call(1, argv, &resource);
 }
