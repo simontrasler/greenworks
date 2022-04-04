@@ -90,6 +90,7 @@ protected:
   std::map<PublishedFileId_t, std::string *> additional_preview_urls_;
   std::map<PublishedFileId_t, EItemPreviewType *> additional_preview_types_;
   std::map<PublishedFileId_t, std::string> metadata_;
+  std::map<PublishedFileId_t, std::string> preview_urls_;
   uint32 total_matching_results_;
   uint32 num_results_returned_;
   CCallResult<QueryUGCWorker, SteamUGCQueryCompleted_t> ugc_query_call_result_;

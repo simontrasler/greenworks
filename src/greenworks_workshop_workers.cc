@@ -255,6 +255,11 @@ void QueryUGCWorker::HandleOKCallback() {
       delete[] tags;
       delete[] display_names;
     }
+		// Write out preview urls
+		if (preview_urls_.size() > 0 && preview_urls_.count(workshop_id) > 0) {
+      std::string preview_url = preview_urls_[workshop_id];
+      Nan::Set(item, Nan::New("previewURL").ToLocalChecked(), Nan::New(preview_url).ToLocalChecked());
+		}
     // Write out additional previews
     if (additional_preview_types_.size() > 0 && additional_preview_types_.count(workshop_id) > 0) {
       std::string *urls = additional_preview_urls_[workshop_id];
@@ -306,6 +311,15 @@ void QueryUGCWorker::OnUGCQueryCompleted(SteamUGCQueryCompleted_t *result, bool 
     for (uint32 i = 0; i < count; ++i) {
       SteamUGC()->GetQueryUGCResult(result->m_handle, i, &item);
       ugc_items_.push_back(item);
+
+			// Get preview url
+			uint32 previewURLSize = 200;
+			char* previewURL = new char[previewURLSize];
+			if (SteamUGC()->GetQueryUGCPreviewURL(result->m_handle, i, previewURL, previewURLSize)) {
+				preview_urls_[item.m_nPublishedFileId] = previewURL;
+			} else {
+				delete[] previewURL;
+			}
 
       // Get required items
       if (item.m_unNumChildren > 0) {
