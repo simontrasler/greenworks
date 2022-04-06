@@ -277,6 +277,22 @@ NAN_METHOD(UGCDownloadItem) {
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
+NAN_METHOD(UGCDeleteItem) {
+  Nan::HandleScope scope;
+  if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction()) {
+    THROW_BAD_ARGS("Bad arguments");
+  }
+  PublishedFileId_t mod_file_id = utils::strToUint64(*(Nan::Utf8String(info[0])));
+  Nan::Callback *success_callback = new Nan::Callback(info[1].As<v8::Function>());
+  Nan::Callback *error_callback = nullptr;
+
+  if (info.Length() > 3 && info[3]->IsFunction())
+    error_callback = new Nan::Callback(info[3].As<v8::Function>());
+
+  Nan::AsyncQueueWorker(new greenworks::DeleteItemWorker(success_callback, error_callback, mod_file_id));
+  info.GetReturnValue().Set(Nan::Undefined());
+}
+
 NAN_METHOD(UGCSynchronizeItems) {
   Nan::HandleScope scope;
   if (info.Length() < 3 || !info[0]->IsObject() || !info[1]->IsString() || !info[2]->IsFunction()) {
@@ -448,6 +464,7 @@ void RegisterAPIs(v8::Local<v8::Object> target) {
   SET_FUNCTION("_ugcGetItems", UGCGetItems);
   SET_FUNCTION("_ugcGetUserItems", UGCGetUserItems);
   SET_FUNCTION("ugcDownloadItem", UGCDownloadItem);
+  SET_FUNCTION("ugcDeleteItem", UGCDeleteItem);
   SET_FUNCTION("_ugcSynchronizeItems", UGCSynchronizeItems);
   SET_FUNCTION("ugcShowOverlay", UGCShowOverlay);
   SET_FUNCTION("ugcUnsubscribe", UGCUnsubscribe);

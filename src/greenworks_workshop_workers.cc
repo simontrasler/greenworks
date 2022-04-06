@@ -574,6 +574,33 @@ void DownloadItemWorker::HandleOKCallback() {
   callback->Call(1, argv, &resource);
 }
 
+DeleteItemWorker::DeleteItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t published_file_id)
+    : SteamCallbackAsyncWorker(success_callback, error_callback), published_file_id_(published_file_id),
+      m_CallbackDeleteCompleted(this, &DeleteItemWorker::OnDeleteCompleted) {}
+void DeleteItemWorker::Execute() {
+  if (SteamUGC()->DeleteItem(published_file_id_)) {
+    // call_result_.Set(nullptr, this, &DeleteItemWorker::OnDeleteCompleted);
+    // currently nonfunctional - don't know how to setup this callback properly
+  } else {
+    is_completed_ = true;
+  }
+
+  // Wait for delete file completed.
+  WaitForCompleted();
+}
+void DeleteItemWorker::OnDeleteCompleted(DeleteItemResult_t *result) {
+  if (result->m_nPublishedFileId == published_file_id_) {
+    result_ = result->m_eResult;
+    is_completed_ = true;
+  }
+}
+void DeleteItemWorker::HandleOKCallback() {
+  Nan::HandleScope scope;
+  v8::Local<v8::Value> argv[] = {Nan::New(result_)};
+  Nan::AsyncResource resource("greenworks:DeleteItemWorker.HandleOKCallback");
+  callback->Call(1, argv, &resource);
+}
+
 SynchronizeItemsWorker::SynchronizeItemsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, const std::string &download_dir, uint32 app_id,
                                                uint32 page_num)
     : SteamCallbackAsyncWorker(success_callback, error_callback), current_download_items_pos_(0), download_dir_(download_dir), app_id_(app_id),

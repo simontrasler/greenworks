@@ -155,6 +155,18 @@ private:
   STEAM_CALLBACK(DownloadItemWorker, OnDownloadCompleted, DownloadItemResult_t, m_CallbackDownloadCompleted);
 };
 
+class DeleteItemWorker : public SteamCallbackAsyncWorker {
+public:
+  DeleteItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t published_file_id);
+  void HandleOKCallback() override;
+  void Execute() override;
+
+private:
+  PublishedFileId_t published_file_id_;
+  EResult result_;
+  STEAM_CALLBACK(DeleteItemWorker, OnDeleteCompleted, DeleteItemResult_t, m_CallbackDeleteCompleted);
+};
+
 class SynchronizeItemsWorker : public SteamCallbackAsyncWorker {
 public:
   SynchronizeItemsWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, const std::string &download_dir, uint32 app_id, uint32 page_num);
