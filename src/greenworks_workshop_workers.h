@@ -158,13 +158,14 @@ private:
 class DeleteItemWorker : public SteamCallbackAsyncWorker {
 public:
   DeleteItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t published_file_id);
+  void OnDeleteCompleted(DeleteItemResult_t *result, bool io_failure);
   void HandleOKCallback() override;
   void Execute() override;
 
 private:
   PublishedFileId_t published_file_id_;
   EResult result_;
-  STEAM_CALLBACK(DeleteItemWorker, OnDeleteCompleted, DeleteItemResult_t, m_CallbackDeleteCompleted);
+  CCallResult<DeleteItemWorker, DeleteItemResult_t> delete_call_result_;
 };
 
 class SynchronizeItemsWorker : public SteamCallbackAsyncWorker {

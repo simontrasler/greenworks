@@ -575,24 +575,20 @@ void DownloadItemWorker::HandleOKCallback() {
 }
 
 DeleteItemWorker::DeleteItemWorker(Nan::Callback *success_callback, Nan::Callback *error_callback, PublishedFileId_t published_file_id)
-    : SteamCallbackAsyncWorker(success_callback, error_callback), published_file_id_(published_file_id),
-      m_CallbackDeleteCompleted(this, &DeleteItemWorker::OnDeleteCompleted) {}
+    : SteamCallbackAsyncWorker(success_callback, error_callback), published_file_id_(published_file_id) {}
 void DeleteItemWorker::Execute() {
-  if (SteamUGC()->DeleteItem(published_file_id_)) {
-    // call_result_.Set(nullptr, this, &DeleteItemWorker::OnDeleteCompleted);
-    // currently nonfunctional - don't know how to setup this callback properly
-  } else {
-    is_completed_ = true;
-  }
-
+  SteamAPICall_t delete_result = SteamUGC()->DeleteItem(published_file_id_);
+  delete_call_result_.Set(delete_result, this, &DeleteItemWorker::OnDeleteCompleted);
   // Wait for delete file completed.
   WaitForCompleted();
 }
-void DeleteItemWorker::OnDeleteCompleted(DeleteItemResult_t *result) {
-  if (result->m_nPublishedFileId == published_file_id_) {
+void DeleteItemWorker::OnDeleteCompleted(DeleteItemResult_t *result, bool io_failure) {
+	if (io_failure) {
+    SetErrorMessage("Error on querying all ugc: Steam API IO Failure");
+  } else {
     result_ = result->m_eResult;
-    is_completed_ = true;
   }
+  is_completed_ = true;
 }
 void DeleteItemWorker::HandleOKCallback() {
   Nan::HandleScope scope;
